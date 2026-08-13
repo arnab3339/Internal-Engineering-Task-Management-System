@@ -1,29 +1,29 @@
 export interface IUserRepository {
-    create(): void
-    find(): void
-    findAll(): void
-    update(): void
-    delete(): void
+    create(): Promise<void>
+    find(): Promise<void>
+    findAll(): Promise<void>
+    update(): Promise<void>
+    delete(): Promise<void>
 }
 
 export class UserRepository implements IUserRepository {
-    create(): void {
+    async create(): Promise<void> {
         
     }
 
-    find(): void {
+    async find(): Promise<void> {
         
     }
 
-    findAll(): void {
+    async findAll(): Promise<void> {
         
     }
 
-    update(): void {
+    async update(): Promise<void> {
         
     }
 
-    delete(): void {
+    async delete(): Promise<void> {
         
     }
 }

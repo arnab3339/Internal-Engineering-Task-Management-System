@@ -1,8 +1,8 @@
 import { IUserRepository } from "../repositories/user.repository.js";
 
 export interface IAuthService {
-    signup(): void
-    signin(): void
+    signup(): Promise<void>
+    signin(): Promise<void>
 }
 
 export class AuthService implements IAuthService {
@@ -12,11 +12,11 @@ export class AuthService implements IAuthService {
         this.userRepository = userRepository;
     }
 
-    signup(): void {
+    async signup(): Promise<void> {
         
     }
 
-    signin(): void {
+    async signin(): Promise<void> {
         
     }
 }
