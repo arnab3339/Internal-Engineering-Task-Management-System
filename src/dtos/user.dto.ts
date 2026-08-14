@@ -3,15 +3,19 @@ import { z } from "zod";
 export const createUserSchema = z.object({
   fullName: z
     .string()
-    .min(1, "fullName is required")
-    .max(150, "fullName must not exceed 150 characters"),
+    .min(1, "Full name is required"),
 
   email: z
-    .email("Invalid email"),
+    .string()
+    .email("Invalid email address"),
 
   password: z
     .string()
-    .min(8, "password must contain at least 8 characters"),
+    .min(
+      8,
+      "Password must be at least 8 characters long"
+    ),
 });
 
-export type SignupDto = z.infer<typeof createUserSchema>;
+export type SignupDto =
+  z.infer<typeof createUserSchema>;

@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import { UserController } from "../../controllers/user.controller.js";
 import { UserService } from "../../services/user.service.js";
 import { UserRepository } from "../../repositories/user.repository.js";
@@ -7,8 +8,22 @@ import { createUserSchema } from "../../dtos/user.dto.js";
 
 const userRouter = Router();
 
-const userController = new UserController(new UserService(new UserRepository));
+const userRepository = new UserRepository();
 
-userRouter.post('/', validateBody(createUserSchema), userController.createUserHandler.bind(userController));
+const userService = new UserService(
+  userRepository
+);
+
+const userController = new UserController(
+  userService
+);
+
+userRouter.post(
+  "/",
+  validateBody(createUserSchema),
+  userController.createUserHandler.bind(
+    userController
+  )
+);
 
 export default userRouter;

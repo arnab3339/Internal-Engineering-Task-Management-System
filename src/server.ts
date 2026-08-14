@@ -4,10 +4,13 @@ import { logger } from "./configs/logger.config.js";
 import { connectToDatabase } from "./configs/db.config.js";
 
 async function startServer() {
-    await connectToDatabase();
-    app.listen(PORT, () => {
-        logger.info(`Server is running on PORT: ${PORT}`);
-    });
+  await connectToDatabase();
+
+  app.listen(PORT, () => {
+    logger.info(
+      `Server is running on PORT: ${PORT}`
+    );
+  });
 }
 
 startServer();
