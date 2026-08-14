@@ -1,29 +1,47 @@
+import { User } from "../generated/prisma/client.js";
+import { SignupDto } from "../dtos/user.dto.js";
+import { prisma } from "../configs/db.config.js";
+
 export interface IUserRepository {
-    create(): Promise<void>
-    find(): Promise<void>
-    findAll(): Promise<void>
-    update(): Promise<void>
-    delete(): Promise<void>
+  create(
+    data: SignupDto,
+    passwordHash: string
+  ): Promise<User>;
+
+  findByEmail(
+    email: string
+  ): Promise<User | null>;
 }
 
 export class UserRepository implements IUserRepository {
-    async create(): Promise<void> {
-        
-    }
 
-    async find(): Promise<void> {
-        
-    }
+async create(
+  data: SignupDto,
+  passwordHash: string
+): Promise<User> {
+  return prisma.user.create({
+    data: {
+      fullName: data.fullName,
+      email: data.email,
+      passwordHash: passwordHash,
 
-    async findAll(): Promise<void> {
-        
-    }
+      role: {
+        connect: {
+          name: "Developer",
+        },
+      },
+    },
+  });
+}
 
-    async update(): Promise<void> {
-        
-    }
+  async findByEmail(
+    email: string
+  ): Promise<User | null> {
 
-    async delete(): Promise<void> {
-        
-    }
+    return prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+  }
 }
