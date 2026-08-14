@@ -2,20 +2,21 @@ import { Request, Response, NextFunction } from "express";
 import { ZodType, ZodError } from "zod";
 import { BadRequestError } from "../utils/errors/app.error.js";
 
-export const validateBody = (schema: ZodType) => {
-    return (req: Request, _res: Response, next: NextFunction): void => {
-        const result = schema.safeParse(req.body);
-
-        if (!result.success) {
-            const details = (result.error as ZodError).issues.map((issue) => ({
-                field: issue.path.join('.'),
-                message: issue.message
+export const validateBody = (schema: ZodType) => async (req: Request, _res: Response, next: NextFunction) => {
+    try {
+        await schema.parse(req.body);
+        next();
+    } catch (error) {
+        if(error instanceof ZodError) {
+            const formattedError: Record<string, string>[] = error.issues.map((issue) => ({
+                message: issue.message,
+                field: issue.path.join('.')
             }));
 
-            throw new BadRequestError('Validation failed', details);
+            const message = formattedError[0]?.message || 'Validation failed';
+            next(new BadRequestError(message, formattedError));
         }
 
-        req.body = result.data;
-        next();
-    };
+        next(error);
+    }
 };

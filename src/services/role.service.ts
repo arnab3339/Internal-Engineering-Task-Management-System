@@ -1,10 +1,12 @@
-import { Role } from "../../generated/prisma/client.js";
+import { Role, Prisma } from "../../generated/prisma/client.js";
 import { IRoleRepository } from "../repositories/role.repository.js";
 import { CreateRoleDto } from "../dtos/role.dto.js";
+import { BadRequestError, ConflictError } from "../utils/errors/app.error.js";
 
 export interface IRoleService {
-    create(data: CreateRoleDto): Promise<Role>;
-    find(id: bigint): Promise<Role | null>;
+    createRole(data: CreateRoleDto): Promise<Role>;
+    findRoleById(id: bigint): Promise<Role | null>;
+    findRoleByName(name: string): Promise<Role | null>;
 }
 
 export class RoleService implements IRoleService {
@@ -14,11 +16,35 @@ export class RoleService implements IRoleService {
         this.roleRepository = roleRepository;
     }
 
-    async create(data: CreateRoleDto): Promise<Role> {
-        return this.roleRepository.create(data);
+    async createRole(data: CreateRoleDto): Promise<Role> {
+        try {
+            return await this.roleRepository.create(data);
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError && error.code == 'P2002') {
+                throw new ConflictError('A record with this value already exists', { fields: error.meta?.target });
+            }
+
+            throw error;
+        }
     }
 
-    async find(id: bigint): Promise<Role | null> {
-        return this.roleRepository.find(id);
+    async findRoleById(id: bigint): Promise<Role | null> {
+        const role: Role | null = await this.roleRepository.find(id);
+
+        if(!role) {
+            throw new BadRequestError('This is role is not exist');
+        }
+
+        return role;
+    }
+
+    async findRoleByName(name: string): Promise<Role | null> {
+        const role: Role | null = await this.roleRepository.findByName(name);
+
+        if(!role) {
+            throw new BadRequestError('This is role is not exist');
+        }
+
+        return role;
     }
 }

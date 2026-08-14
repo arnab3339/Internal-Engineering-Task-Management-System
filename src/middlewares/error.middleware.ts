@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/errors/app.error.js";
 import { NODE_ENV } from "../configs/server.config.js";
+import { logger } from "../configs/logger.config.js";
 
 export const errorHandler = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
 
@@ -16,6 +17,8 @@ export const errorHandler = (error: Error, _req: Request, res: Response, _next: 
 
         return;
     }
+
+    logger.error(error);
 
     const body: Record<string, unknown> = {
         success: false,

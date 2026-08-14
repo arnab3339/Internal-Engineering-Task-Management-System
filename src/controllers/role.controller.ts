@@ -11,11 +11,11 @@ export class RoleController {
         this.roleService = roleService;
     }
 
-    createHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    createRoleHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const data = req.body as CreateRoleDto;
 
-            const role = await this.roleService.create(data);
+            const role = await this.roleService.createRole(data);
 
             sendSuccess(res, role, StatusCodes.CREATED, 'Role created successfully');
         } catch (error) {

@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response  } from "express"
 
+import { asyncLocalStorage } from "../utils/helpers/request.helper.js";
+
 export const attchCorrelationMiddleware = (req: Request, _res: Response, next: NextFunction) => {
-    const correaltionId = crypto.randomUUID();
+    const correlationId = crypto.randomUUID();
 
-    req.headers['x-correlation-id'] = correaltionId;
+    req.headers['x-correlation-id'] = correlationId;
 
-    next();
+    asyncLocalStorage.run({ correlationId }, () => next());
 }
