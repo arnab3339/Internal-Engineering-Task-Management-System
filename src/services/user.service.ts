@@ -1,11 +1,11 @@
-import { Prisma, User } from "../generated/prisma/client.js";
+import { Prisma, User } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { IUserRepository } from "../repositories/user.repository.js";
 import { ConflictError } from "../utils/errors/app.error.js";
 import bcrypt from "bcrypt";
 
 export interface IUserService {
-  signup(data: SignupDto): Promise<User>;
+  createUser(data: SignupDto): Promise<User>;
 }
 
 export class UserService implements IUserService {
@@ -15,7 +15,7 @@ export class UserService implements IUserService {
     this.userRepository = userRepository;
   }
 
-  async signup(data: SignupDto): Promise<User> {
+  async createUser(data: SignupDto): Promise<User> {
     try {
       const existingUser = await this.userRepository.findByEmail(
         data.email
@@ -27,10 +27,7 @@ export class UserService implements IUserService {
 
       const passwordHash = await bcrypt.hash(data.password, 10);
 
-      return await this.userRepository.create({
-        ...data,
-        passwordHash,
-      });
+      return await this.userRepository.create(data, passwordHash);
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

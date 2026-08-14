@@ -1,6 +1,7 @@
-import { User } from "../generated/prisma/client.js";
+import { User } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { prisma } from "../configs/db.config.js";
+import { DEVELOPER } from "../contants/role.constant.js";
 
 export interface IUserRepository {
   create(
@@ -27,7 +28,7 @@ async create(
 
       role: {
         connect: {
-          name: "Developer",
+          name: DEVELOPER,
         },
       },
     },

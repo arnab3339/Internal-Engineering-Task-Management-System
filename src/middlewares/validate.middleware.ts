@@ -4,7 +4,7 @@ import { BadRequestError } from "../utils/errors/app.error.js";
 
 export const validateBody =
   (schema: ZodType) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, _res: Response, next: NextFunction) => {
     try {
       const parsedData = await schema.parse(req.body);
 
