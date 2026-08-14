@@ -99,3 +99,37 @@
 {"level":"error","timestamp":"14-08-2026 17:20:20","correlationId":"300bf1f3-42e1-4b3f-8ccd-5998ad4f7923","data":{}}
 {"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 17:21:03","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
 {"level":"info","message":"Server is running on PORT: 3000","timestamp":"14-08-2026 17:21:03","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:03:38","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:03:38","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:11:32","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:11:32","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:11:49","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:11:49","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:12:11","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:12:11","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:12:23","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:12:23","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:12:36","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:12:36","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:13:08","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:13:08","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:13:16","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:13:16","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:14:11","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:14:11","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:22:30","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:22:30","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:22:44","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:22:44","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:22:54","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:22:54","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:26:05","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:26:05","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"error","timestamp":"14-08-2026 18:26:24","correlationId":"ac612033-c0aa-4084-8b13-ad5de5255e3d","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:27:09","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:27:09","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:27:19","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:27:19","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"error","timestamp":"14-08-2026 18:27:25","correlationId":"f07a50d5-dadb-410b-a37c-072fc7040e3d","data":{"code":"P2025","meta":{"modelName":"User","model":"Role","relation":"RoleToUser","relationType":"one-to-many","operation":"a nested connect","neededFor":"inline the relation on 'User' record(s)"},"clientVersion":"7.9.1","name":"PrismaClientKnownRequestError"}}
+{"level":"info","message":"Database Connected Successfully","timestamp":"14-08-2026 18:29:11","correlationId":"unknown-error-while-creating-correlation-id","data":{}}
+{"level":"info","message":"Server is running on PORT: 5000","timestamp":"14-08-2026 18:29:11","correlationId":"unknown-error-while-creating-correlation-id","data":{}}

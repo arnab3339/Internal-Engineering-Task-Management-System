@@ -1,19 +1,37 @@
-import { Request, Response, NextFunction } from "express";
+import {
+  Request,
+  Response,
+  NextFunction,
+} from "express";
+
 import { IAuthService } from "../services/auth.service.js";
-import { NotimplementedError } from "../utils/errors/app.error.js";
 
 export class AuthController {
-    private readonly authService: IAuthService;
 
-    constructor(authService: IAuthService) {
-        this.authService = authService;
-    }
+  private readonly authService: IAuthService;
 
-    async signupHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
-        throw new NotimplementedError('Signup Handler is not implemented');
-    }
+  constructor(authService: IAuthService) {
+    this.authService = authService;
+  }
 
-    async signinHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
-        throw new NotimplementedError('Signin Handler is not implemented');
+  async signupHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+
+    try {
+
+      await this.authService.signup(req.body);
+
+      res.status(201).json({
+        success: true,
+        message: "User registered successfully",
+      });
+
+    } catch (error) {
+
+      next(error);
     }
+  }
 }
