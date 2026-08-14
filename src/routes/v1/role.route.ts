@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { RoleController } from "../../controllers/role.controller.js";
 import { RoleService } from "../../services/role.service.js";
-import { validateCreateRole } from "../../middlewares/role.validation.middleware.js";
+import { createRoleSchema } from "../../dto/role.dto.js";
+import { validate } from "../../middlewares/validation.middleware.js";
 
 const roleRouter = Router();
 
@@ -10,7 +11,7 @@ const roleController = new RoleController(roleService);
 
 roleRouter.post(
     "/",
-    validateCreateRole,
+    validate(createRoleSchema),
     roleController.createRoleHandler.bind(roleController)
 );
 

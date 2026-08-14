@@ -3,48 +3,34 @@ import { AppError } from "../utils/errors/app.error.js";
 import { NODE_ENV } from "../configs/server.config.js";
 
 export const errorHandler = (
-  error: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction
+    error: Error,
+    _req: Request,
+    res: Response,
+    _next: NextFunction
 ) => {
-  const prismaError = error as Error & {
-    code?: string;
-  };
+    if (error instanceof AppError) {
+        const body: Record<string, unknown> = {
+            success: false,
+            message: error.message,
+        };
 
-  if (prismaError.code === "P2002") {
-    res.status(409).json({
-      success: false,
-      message: "A record with this value already exists",
-      details: {},
-    });
+        if (error.details) {
+            body["details"] = error.details;
+        }
 
-    return;
-  }
+        res.status(error.statusCode).json(body);
 
-  if (error instanceof AppError) {
-    const body: Record<string, unknown> = {
-      success: false,
-      message: error.message,
-    };
-
-    if (error.details) {
-      body["details"] = error.details;
+        return;
     }
 
-    res.status(error.statusCode).json(body);
+    const body: Record<string, unknown> = {
+        success: false,
+        message: "Something went wrong",
+    };
 
-    return;
-  }
+    if (NODE_ENV === "development") {
+        body["details"] = error.stack;
+    }
 
-  const body: Record<string, unknown> = {
-    success: false,
-    message: "Something went wrong",
-  };
-
-  if (NODE_ENV === "development") {
-    body["details"] = error.stack;
-  }
-
-  res.status(500).json(body);
+    res.status(500).json(body);
 };
