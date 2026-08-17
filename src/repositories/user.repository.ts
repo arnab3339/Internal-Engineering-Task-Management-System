@@ -1,4 +1,4 @@
-import { User } from "../../generated/prisma/client.js";
+import { Prisma, User } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { prisma } from "../configs/db.config.js";
 import { DEVELOPER } from "../contants/role.constant.js";
