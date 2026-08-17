@@ -3,9 +3,10 @@ import { IUserRepository } from "../repositories/user.repository.js";
 import { BadRequestError } from "../utils/errors/app.error.js";
 import { comparePassword } from "../utils/helpers/password.helper.js";
 import { signToken } from "../utils/helpers/jwt.helper.js";
+import { SafeUser } from "../types/user.type.js";
 
 export interface IAuthService {
-  signIn(data: SignInDto): Promise<string>;
+  signIn(data: SignInDto): Promise<{ token: string; user: SafeUser }>;
 }
 
 export class AuthService implements IAuthService {
@@ -15,7 +16,7 @@ export class AuthService implements IAuthService {
     this.userRepository = userRepository;
   }
 
-  async signIn(data: SignInDto): Promise<string> {
+  async signIn(data: SignInDto): Promise<{ token: string; user: SafeUser }> {
     const user = await this.userRepository.findByEmail(data.email);
 
     if (!user) {
@@ -34,6 +35,11 @@ export class AuthService implements IAuthService {
       roleId: user.roleId.toString(),
     });
 
-    return token;
+    const { passwordHash: _passwordHash, ...safeUser } = user;
+
+    return {
+      token,
+      user: safeUser,
+    };
   }
 }
