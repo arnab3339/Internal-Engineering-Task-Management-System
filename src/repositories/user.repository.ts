@@ -57,6 +57,9 @@ export class UserRepository implements IUserRepository {
             where: {
                 email,
             },
+            include: {
+                role: true,
+            },
         });
 
     }

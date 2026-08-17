@@ -10,25 +10,24 @@ import { signToken } from "../utils/helpers/jwt.helper.js";
 import { SafeUser, UserTokenPayload } from "../types/user.type.js";
 
 export interface IAuthService {
-
     signIn(data: SignInDto): Promise<string>;
 
     getCurrentUser(
         user: UserTokenPayload
     ): Promise<SafeUser>;
-
 }
 
 export class AuthService implements IAuthService {
-
     private readonly userRepository: IUserRepository;
 
     constructor(userRepository: IUserRepository) {
         this.userRepository = userRepository;
+
+        this.signIn = this.signIn.bind(this);
+        this.getCurrentUser = this.getCurrentUser.bind(this);
     }
 
     async signIn(data: SignInDto): Promise<string> {
-
         const user = await this.userRepository.findByEmail(data.email);
 
         if (!user) {
@@ -56,7 +55,6 @@ export class AuthService implements IAuthService {
     async getCurrentUser(
         user: UserTokenPayload
     ): Promise<SafeUser> {
-
         const currentUser = await this.userRepository.findById(
             BigInt(user.id)
         );
@@ -67,5 +65,4 @@ export class AuthService implements IAuthService {
 
         return currentUser;
     }
-
 }

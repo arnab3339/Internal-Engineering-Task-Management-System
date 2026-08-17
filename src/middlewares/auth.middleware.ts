@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from "express";
-
 import { UnauthorizedError } from "../utils/errors/app.error.js";
 import { verifyToken } from "../utils/helpers/jwt.helper.js";
 

@@ -20,13 +20,13 @@ const authController = new AuthController(authService);
 authRouter.post(
     "/signin",
     validateBody(signInSchema),
-    authController.signInHandler
+    authController.signInHandler.bind(authController)
 );
 
 authRouter.get(
     "/me",
     authMiddleware,
-    authController.getCurrentUser
+    authController.getCurrentUser.bind(authController)
 );
 
 export default authRouter;
