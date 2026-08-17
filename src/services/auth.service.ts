@@ -12,6 +12,11 @@ import {
     hashPassword
 } from "../utils/helpers/password.helper.js";
 import { signToken } from "../utils/helpers/jwt.helper.js";
+import { SafeUserWithRole, UserTokenPayload } from "../types/user.type.js";
+
+export interface IAuthService {
+    signIn(data: SignInDto): Promise<string>;
+    getCurrentUser(user: UserTokenPayload): Promise<SafeUserWithRole>;
 import { UserTokenPayload } from "../types/user.type.js";
 
 export interface IAuthService {
@@ -55,6 +60,14 @@ export class AuthService implements IAuthService {
         return token;
     }
 
+    async getCurrentUser(user: UserTokenPayload): Promise<SafeUserWithRole> {
+        const currentUser = await this.userRepository.findById(BigInt(user.id));
+
+        if (!currentUser) {
+            throw new BadRequestError("User not found");
+        }
+
+        return currentUser;
     async updatePassword(
         user: UserTokenPayload,
         data: UpdatePasswordDto
