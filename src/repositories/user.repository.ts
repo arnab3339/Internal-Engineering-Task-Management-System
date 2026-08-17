@@ -2,7 +2,7 @@ import { Prisma, User } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { prisma } from "../configs/db.config.js";
 import { DEVELOPER } from "../contants/role.constant.js";
-import { SafeUser } from "../types/user.type.js";
+import { SafeUser, SafeUserWithRole } from "../types/user.type.js";
 
 export interface IUserRepository {
     create(
@@ -42,20 +42,30 @@ export class UserRepository implements IUserRepository {
                 },
             },
             omit: {
-                passwordHash: true,
-            },
+                passwordHash: true
+            }
         });
     }
 
-    async findByEmail(
-        email: string
-    ): Promise<User | null> {
+    async findByEmail(email: string): Promise<User | null> {
         return prisma.user.findUnique({
             where: {
                 email,
             },
         });
     }
+
+    async findById(id: bigint): Promise<SafeUserWithRole | null> {
+        return prisma.user.findUnique({
+            where: {
+                id,
+            },
+            omit: {
+                passwordHash: true
+            },
+            include: {
+                role: true
+            }
 
     async findById(
         id: bigint

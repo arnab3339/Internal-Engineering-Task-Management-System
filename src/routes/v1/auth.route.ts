@@ -20,6 +20,10 @@ authRouter.post(
     authController.signInHandler.bind(authController)
 );
 
+authRouter.get(
+    "/me",
+    authMiddleware,
+    authController.getCurrentUser.bind(authController)
 authRouter.patch(
     "/update-password",
     authenticate,
