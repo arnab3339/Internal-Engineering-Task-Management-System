@@ -1,20 +1,13 @@
 import { SignInDto } from "../dtos/auth.dto.js";
-
 import { IUserRepository } from "../repositories/user.repository.js";
-
 import { BadRequestError } from "../utils/errors/app.error.js";
 import { comparePassword } from "../utils/helpers/password.helper.js";
-
 import { signToken } from "../utils/helpers/jwt.helper.js";
-
 import { SafeUser, UserTokenPayload } from "../types/user.type.js";
 
 export interface IAuthService {
     signIn(data: SignInDto): Promise<string>;
-
-    getCurrentUser(
-        user: UserTokenPayload
-    ): Promise<SafeUser>;
+    getCurrentUser(user: UserTokenPayload): Promise<SafeUser>;
 }
 
 export class AuthService implements IAuthService {
@@ -22,9 +15,6 @@ export class AuthService implements IAuthService {
 
     constructor(userRepository: IUserRepository) {
         this.userRepository = userRepository;
-
-        this.signIn = this.signIn.bind(this);
-        this.getCurrentUser = this.getCurrentUser.bind(this);
     }
 
     async signIn(data: SignInDto): Promise<string> {
@@ -52,9 +42,7 @@ export class AuthService implements IAuthService {
         return token;
     }
 
-    async getCurrentUser(
-        user: UserTokenPayload
-    ): Promise<SafeUser> {
+    async getCurrentUser(user: UserTokenPayload): Promise<SafeUser> {
         const currentUser = await this.userRepository.findById(
             BigInt(user.id)
         );

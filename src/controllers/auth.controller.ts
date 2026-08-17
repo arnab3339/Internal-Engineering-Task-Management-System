@@ -1,26 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
-
 import { IAuthService } from "../services/auth.service.js";
-
 import { SignInDto } from "../dtos/auth.dto.js";
-
 import { sendSuccess } from "../utils/helpers/response.helper.js";
-
-import {
-    COOKIE_MAX_AGE,
-    COOKIE_SECURE,
-    COOKIE_SAME_SITE,
-} from "../configs/server.config.js";
+import {COOKIE_MAX_AGE,COOKIE_SECURE,COOKIE_SAME_SITE,} from "../configs/server.config.js";
 
 export class AuthController {
     private readonly authService: IAuthService;
 
     constructor(authService: IAuthService) {
         this.authService = authService;
-
-        this.signInHandler = this.signInHandler.bind(this);
-        this.getCurrentUser = this.getCurrentUser.bind(this);
     }
 
     async signInHandler(
@@ -57,9 +46,7 @@ export class AuthController {
         next: NextFunction
     ): Promise<void> {
         try {
-            const user = await this.authService.getCurrentUser(
-                req.user!
-            );
+            const user = await this.authService.getCurrentUser(req.user!);
 
             sendSuccess(
                 res,
