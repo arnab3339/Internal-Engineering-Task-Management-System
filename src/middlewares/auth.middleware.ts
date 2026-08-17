@@ -1,13 +1,26 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/helpers/jwt.helper.js";
 import { UnauthorizedError } from "../utils/errors/app.error.js";
+import { verifyToken } from "../utils/helpers/jwt.helper.js";
+import { UserTokenPayload } from "../types/user.type.js";
 
-export async function authMiddleware(req: Request, res: Response, next: NextFunction): Promise<void> {
+declare global {
+    namespace Express {
+        interface Request {
+            user?: UserTokenPayload;
+        }
+    }
+}
+
+export function authenticate(
+    req: Request,
+    _res: Response,
+    next: NextFunction
+): void {
     try {
-        const token = req.cookies.accessToken;
+        const token = req.cookies?.accessToken;
 
         if (!token) {
-            throw new UnauthorizedError("Please sign in first");
+            throw new UnauthorizedError("Authentication token is required");
         }
 
         const payload = verifyToken(token);
@@ -16,6 +29,6 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
         next();
     } catch (error) {
-        next(new UnauthorizedError("Session expired or invalid, please sign in again"));
+        next(error);
     }
 }
