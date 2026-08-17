@@ -12,13 +12,13 @@ export class AuthController {
         this.authService = authService;
     }
 
-    signInHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async signInHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const data = req.body as SignInDto;
 
             const token = await this.authService.signIn(data);
 
-            res.cookie('token', token, {
+            res.cookie('accessToken', token, {
                 httpOnly: true,
                 secure: COOKIE_SECURE,
                 sameSite: COOKIE_SAME_SITE,
