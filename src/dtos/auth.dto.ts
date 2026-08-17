@@ -9,3 +9,16 @@ export const signInSchema = z.object({
 });
 
 export type SignInDto = z.infer<typeof signInSchema>;
+
+
+export const updatePasswordSchema = z.object({
+  oldPassword: z
+    .string()
+    .min(1, "oldPassword is required"),
+
+  newPassword: z
+    .string()
+    .min(6, "newPassword must be at least 6 characters"),
+});
+
+export type UpdatePasswordDto = z.infer<typeof updatePasswordSchema>;
