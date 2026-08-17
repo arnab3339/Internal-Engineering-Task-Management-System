@@ -5,3 +5,7 @@ import { SALT_ROUNDS } from "../../configs/server.config.js";
 export async function hashPassword(plainPassword: string): Promise<string> {
     return await bcrypt.hash(plainPassword, SALT_ROUNDS);
 }
+
+export async function comparePassword(plainPassword: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(plainPassword, hash);
+}

@@ -5,6 +5,14 @@ export const NODE_ENV = process.env.NODE_ENV || 'development';
 
 export const DB_HOST = process.env.DB_HOST || 'localhost';
 export const DB_USER = process.env.DB_USER || 'root';
-export const DB_NAME = process.env.DB_NAME || 'task_system';
-export const DB_PASSWORD = process.env.DB_PASSWORD || '1748arijiT#'; 
-export const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10
+export const DB_NAME = process.env.DB_NAME || 'task_management_db';
+export const DB_PASSWORD = process.env.DB_PASSWORD || 'toor';
+
+export const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
+
+if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined in environment variables');
+}
+
+export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1d';
