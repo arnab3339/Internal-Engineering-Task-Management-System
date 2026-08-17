@@ -3,11 +3,11 @@ import { IUserRepository } from "../repositories/user.repository.js";
 import { BadRequestError } from "../utils/errors/app.error.js";
 import { comparePassword } from "../utils/helpers/password.helper.js";
 import { signToken } from "../utils/helpers/jwt.helper.js";
-import { SafeUser, UserTokenPayload } from "../types/user.type.js";
+import { SafeUserWithRole, UserTokenPayload } from "../types/user.type.js";
 
 export interface IAuthService {
     signIn(data: SignInDto): Promise<string>;
-    getCurrentUser(user: UserTokenPayload): Promise<SafeUser>;
+    getCurrentUser(user: UserTokenPayload): Promise<SafeUserWithRole>;
 }
 
 export class AuthService implements IAuthService {
@@ -24,10 +24,7 @@ export class AuthService implements IAuthService {
             throw new BadRequestError("Invalid email or password");
         }
 
-        const isPasswordValid = await comparePassword(
-            data.password,
-            user.passwordHash
-        );
+        const isPasswordValid = await comparePassword(data.password, user.passwordHash);
 
         if (!isPasswordValid) {
             throw new BadRequestError("Invalid email or password");
@@ -42,10 +39,8 @@ export class AuthService implements IAuthService {
         return token;
     }
 
-    async getCurrentUser(user: UserTokenPayload): Promise<SafeUser> {
-        const currentUser = await this.userRepository.findById(
-            BigInt(user.id)
-        );
+    async getCurrentUser(user: UserTokenPayload): Promise<SafeUserWithRole> {
+        const currentUser = await this.userRepository.findById(BigInt(user.id));
 
         if (!currentUser) {
             throw new BadRequestError("User not found");
