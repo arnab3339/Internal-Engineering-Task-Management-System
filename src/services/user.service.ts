@@ -1,11 +1,12 @@
-import { Prisma, User } from "../../generated/prisma/client.js";
+import { Prisma } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { IUserRepository } from "../repositories/user.repository.js";
+import { SafeUser } from "../types/user.type.js";
 import { ConflictError } from "../utils/errors/app.error.js";
-import bcrypt from "bcrypt";
+import { hashPassword } from "../utils/helpers/password.helper.js";
 
 export interface IUserService {
-  createUser(data: SignupDto): Promise<User>;
+  createUser(data: SignupDto): Promise<SafeUser>;
 }
 
 export class UserService implements IUserService {
@@ -15,7 +16,7 @@ export class UserService implements IUserService {
     this.userRepository = userRepository;
   }
 
-  async createUser(data: SignupDto): Promise<User> {
+  async createUser(data: SignupDto): Promise<SafeUser> {
     try {
       const existingUser = await this.userRepository.findByEmail(
         data.email
@@ -25,7 +26,7 @@ export class UserService implements IUserService {
         throw new ConflictError("Email already exists");
       }
 
-      const passwordHash = await bcrypt.hash(data.password, 10);
+      const passwordHash = await hashPassword(data.password);
 
       return await this.userRepository.create(data, passwordHash);
     } catch (error) {

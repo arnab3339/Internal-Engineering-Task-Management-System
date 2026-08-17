@@ -7,7 +7,7 @@ import { createUserSchema } from "../../dtos/user.dto.js";
 
 const userRouter = Router();
 
-const userController = new UserController(new UserService(new UserRepository));
+const userController = new UserController(new UserService(new UserRepository()));
 
 userRouter.post('/', validateBody(createUserSchema), userController.createUserHandler.bind(userController));
 

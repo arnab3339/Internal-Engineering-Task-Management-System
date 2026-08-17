@@ -2,12 +2,13 @@ import { User } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { prisma } from "../configs/db.config.js";
 import { DEVELOPER } from "../contants/role.constant.js";
+import { SafeUser } from "../types/user.type.js";
 
 export interface IUserRepository {
   create(
     data: SignupDto,
     passwordHash: string
-  ): Promise<User>;
+  ): Promise<SafeUser>;
 
   findByEmail(
     email: string
@@ -19,7 +20,7 @@ export class UserRepository implements IUserRepository {
 async create(
   data: SignupDto,
   passwordHash: string
-): Promise<User> {
+): Promise<SafeUser> {
   return prisma.user.create({
     data: {
       fullName: data.fullName,
@@ -32,6 +33,10 @@ async create(
         },
       },
     },
+
+    omit: {
+      passwordHash: true
+    }
   });
 }
 
