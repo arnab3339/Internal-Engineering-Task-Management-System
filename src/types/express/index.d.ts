@@ -1,4 +1,4 @@
-import { JwtPayload } from "../../utils/helpers/jwt.helper.js";
+import { UserTokenPayload } from "../user.type.js";
 
 declare global {
   namespace Express {
