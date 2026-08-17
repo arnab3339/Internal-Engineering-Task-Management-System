@@ -17,22 +17,10 @@ export function authenticate(
     next: NextFunction
 ): void {
     try {
-        const authorization = req.headers.authorization;
-
-        if (!authorization) {
-            throw new UnauthorizedError("Authorization token is required");
-        }
-
-        const parts = authorization.split(" ");
-
-        if (parts.length !== 2 || parts[0] !== "Bearer") {
-            throw new UnauthorizedError("Invalid authorization format");
-        }
-
-        const token = parts[1];
+        const token = req.cookies?.accessToken;
 
         if (!token) {
-            throw new UnauthorizedError("Authorization token is required");
+            throw new UnauthorizedError("Authentication token is required");
         }
 
         const payload = verifyToken(token);
