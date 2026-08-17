@@ -9,17 +9,32 @@ export class AuthController {
 
     constructor(authService: IAuthService) {
         this.authService = authService;
+
+        this.signInHandler = this.signInHandler.bind(this);
     }
 
-    async signInHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async signInHandler(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> {
         try {
             const data = req.body as SignInDto;
 
             const result = await this.authService.signIn(data);
 
-            sendSuccess(res, result, StatusCodes.OK, 'Signed in successfully');
+            res.cookie("token", result, {
+                httpOnly: true,
+            });
+
+            sendSuccess(
+                res,
+                null,
+                StatusCodes.OK,
+                "Signed in successfully"
+            );
         } catch (error) {
             next(error);
         }
-    };
+    }
 }
