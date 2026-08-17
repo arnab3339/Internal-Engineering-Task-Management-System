@@ -48,3 +48,9 @@ export class ConflictError extends AppError {
         super(message, StatusCodes.CONFLICT, details);
     }
 }
+
+export class ForbiddenError extends AppError {
+    constructor(message: string, details?: unknown) {
+        super(message, StatusCodes.FORBIDDEN, details);
+    }
+}

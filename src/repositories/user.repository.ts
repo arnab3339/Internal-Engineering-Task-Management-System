@@ -1,53 +1,42 @@
-import { User } from "../../generated/prisma/client.js";
+import { Prisma, User } from "../../generated/prisma/client.js";
 import { SignupDto } from "../dtos/user.dto.js";
 import { prisma } from "../configs/db.config.js";
 import { DEVELOPER } from "../contants/role.constant.js";
 import { SafeUser } from "../types/user.type.js";
 
 export interface IUserRepository {
-  create(
-    data: SignupDto,
-    passwordHash: string
-  ): Promise<SafeUser>;
-
-  findByEmail(
-    email: string
-  ): Promise<User | null>;
+  create(data: SignupDto, passwordHash: string): Promise<SafeUser>;
+  findByEmail(email: string): Promise<User | null>;
+  findById(id: bigint): Promise<User | null>;
+  update(id: bigint, data: Prisma.UserUpdateInput): Promise<SafeUser>;
 }
 
 export class UserRepository implements IUserRepository {
-
-async create(
-  data: SignupDto,
-  passwordHash: string
-): Promise<SafeUser> {
-  return prisma.user.create({
-    data: {
-      fullName: data.fullName,
-      email: data.email,
-      passwordHash: passwordHash,
-
-      role: {
-        connect: {
-          name: DEVELOPER,
-        },
+  async create(data: SignupDto, passwordHash: string): Promise<SafeUser> {
+    return prisma.user.create({
+      data: {
+        fullName: data.fullName,
+        email: data.email,
+        passwordHash: passwordHash,
+        role: { connect: { name: DEVELOPER } },
       },
-    },
+      omit: { passwordHash: true }
+    });
+  }
 
-    omit: {
-      passwordHash: true
-    }
-  });
-}
+  async findByEmail(email: string): Promise<User | null> {
+    return prisma.user.findUnique({ where: { email } });
+  }
 
-  async findByEmail(
-    email: string
-  ): Promise<User | null> {
+  async findById(id: bigint): Promise<User | null> {
+    return prisma.user.findUnique({ where: { id } });
+  }
 
-    return prisma.user.findUnique({
-      where: {
-        email,
-      },
+  async update(id: bigint, data: Prisma.UserUpdateInput): Promise<SafeUser> {
+    return prisma.user.update({
+      where: { id },
+      data,
+      omit: { passwordHash: true }
     });
   }
 }
