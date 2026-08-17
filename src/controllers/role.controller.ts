@@ -11,7 +11,7 @@ export class RoleController {
         this.roleService = roleService;
     }
 
-    createRoleHandler = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    async createRoleHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const data = req.body as CreateRoleDto;
 

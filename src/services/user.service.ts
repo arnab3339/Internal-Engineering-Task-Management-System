@@ -1,14 +1,13 @@
 import { Prisma } from "../../generated/prisma/client.js";
-import { SignupDto, UpdateUserDto } from "../dtos/user.dto.js";
+import { CreateUserDto, UpdateUserDto } from "../dtos/user.dto.js";
 import { IUserRepository } from "../repositories/user.repository.js";
-import { SafeUser } from "../types/user.type.js";
-import { ConflictError, ForbiddenError, NotfoundError } from "../utils/errors/app.error.js";
+import { SafeUser } from "../types/auth.type.js";
+import { ConflictError, NotfoundError, UnauthorizedError } from "../utils/errors/app.error.js";
 import { hashPassword } from "../utils/helpers/password.helper.js";
-import { parseId } from "../utils/helpers/id.helper.js";
 
 export interface IUserService {
-  createUser(data: SignupDto): Promise<SafeUser>;
-  updateUser(loggedInUserId: string, targetId: string, data: UpdateUserDto): Promise<SafeUser>;
+  createUser(data: CreateUserDto): Promise<SafeUser>;
+  updateUser(loggedInUserId: bigint, targetUserId: bigint, data: UpdateUserDto): Promise<SafeUser>;
 }
 
 export class UserService implements IUserService {
@@ -18,7 +17,7 @@ export class UserService implements IUserService {
     this.userRepository = userRepository;
   }
 
-  async createUser(data: SignupDto): Promise<SafeUser> {
+  async createUser(data: CreateUserDto): Promise<SafeUser> {
     try {
       const existingUser = await this.userRepository.findByEmail(data.email);
       if (existingUser) {
@@ -34,35 +33,25 @@ export class UserService implements IUserService {
     }
   }
 
- async updateUser(loggedInUserId: string, targetId: string, data: UpdateUserDto): Promise<SafeUser> {
-    const targetUserId = parseId(targetId);
-
+ async updateUser(loggedInUserId: bigint, targetUserId: bigint, data: UpdateUserDto): Promise<SafeUser> {
     const targetUser = await this.userRepository.findById(targetUserId);
 
     if (!targetUser) {
       throw new NotfoundError("User not found");
     }
 
-    if (loggedInUserId !== targetId) {
-      throw new ForbiddenError("You are not allowed to update this profile");
+    if (loggedInUserId !== targetUserId) {
+      throw new UnauthorizedError("You are not allowed to update this profile");
     }
 
-    const updateData: Prisma.UserUpdateInput = {};
-
-    if (data.fullName !== undefined && data.fullName !== null) {
-      updateData.fullName = data.fullName;
-    }
-
-    if (data.email !== undefined && data.email !== null) {
-      updateData.email = data.email;
-    }
-
-    if (data.password !== undefined && data.password !== null) {
-      updateData.passwordHash = await hashPassword(data.password);
-    }
+    const updateData: Prisma.UserUpdateInput = {
+      ...(data.fullName != undefined && { fullName: data.fullName}),
+      ...(data.email != undefined && { email: data.email }),
+      ...(data.password != undefined && { passwordHash: await hashPassword(data.password)})
+    };
 
     try {
-      return await this.userRepository.update(targetUserId, updateData);
+      return await this.userRepository.updateUser(targetUserId, updateData);
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
         throw new ConflictError("Email already in use");

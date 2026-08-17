@@ -3,12 +3,7 @@ import { AppError } from "../utils/errors/app.error.js";
 import { NODE_ENV } from "../configs/server.config.js";
 import { logger } from "../configs/logger.config.js";
 
-export function errorHandler(
-    error: unknown,
-    _req: Request,
-    res: Response,
-    _next: NextFunction
-): void {
+export const errorHandler = (error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     if (error instanceof AppError) {
         const body: Record<string, unknown> = {
             success: false,
@@ -24,11 +19,7 @@ export function errorHandler(
         return;
     }
 
-    if (error instanceof Error) {
-        logger.error(error);
-    } else {
-        logger.error("Unknown error occurred");
-    }
+    logger.error('Unknown error occured', { details: error });
 
     const body: Record<string, unknown> = {
         success: false,

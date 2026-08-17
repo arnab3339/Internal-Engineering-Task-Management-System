@@ -1,11 +1,15 @@
-import { UserTokenPayload } from "./user.type.js";
+import { Request } from "express";
+
+import { AuthUser } from "./auth.type.ts";
 
 declare global {
     namespace Express {
         interface Request {
-            user?: UserTokenPayload;
+            user?: AuthUser;
         }
     }
 }
 
-export {};
+export interface AuthenticatedRequest extends Request {
+    user: AuthUser
+}

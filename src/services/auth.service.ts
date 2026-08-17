@@ -1,31 +1,14 @@
-import {
-    SignInDto,
-    UpdatePasswordDto
-} from "../dtos/auth.dto.js";
+import { SignInDto, UpdatePasswordDto } from "../dtos/auth.dto.js";
 import { IUserRepository } from "../repositories/user.repository.js";
-import {
-    BadRequestError,
-    UnauthorizedError
-} from "../utils/errors/app.error.js";
-import {
-    comparePassword,
-    hashPassword
-} from "../utils/helpers/password.helper.js";
+import { BadRequestError, NotfoundError } from "../utils/errors/app.error.js";
+import { comparePassword, hashPassword } from "../utils/helpers/password.helper.js";
 import { signToken } from "../utils/helpers/jwt.helper.js";
-import { SafeUserWithRole, UserTokenPayload } from "../types/user.type.js";
+import { AuthUser, SafeUserWithRole, UserWithRole } from "../types/auth.type.js";
 
 export interface IAuthService {
-    signIn(data: SignInDto): Promise<string>;
-    getCurrentUser(user: UserTokenPayload): Promise<SafeUserWithRole>;
-import { UserTokenPayload } from "../types/user.type.js";
-
-export interface IAuthService {
-    signIn(data: SignInDto): Promise<string>;
-
-    updatePassword(
-        user: UserTokenPayload,
-        data: UpdatePasswordDto
-    ): Promise<void>;
+  signIn(data: SignInDto): Promise<string>;
+  getCurrentUserDetils(user: AuthUser): Promise<SafeUserWithRole>;
+  updatePassword(user: AuthUser, data: UpdatePasswordDto): Promise<void>;
 }
 
 export class AuthService implements IAuthService {
@@ -36,7 +19,7 @@ export class AuthService implements IAuthService {
     }
 
     async signIn(data: SignInDto): Promise<string> {
-        const user = await this.userRepository.findByEmail(data.email);
+        const user: UserWithRole | null = await this.userRepository.findByEmail(data.email);
 
         if (!user) {
             throw new BadRequestError("Invalid email or password");
@@ -51,60 +34,46 @@ export class AuthService implements IAuthService {
             throw new BadRequestError("Invalid email or password");
         }
 
-        const token = signToken({
-            id: user.id.toString(),
-            email: user.email,
-            roleId: user.roleId.toString(),
+        const token: string = signToken({
+          userId: user.id.toString(),
+          role: user.role.name
         });
 
         return token;
     }
 
-    async getCurrentUser(user: UserTokenPayload): Promise<SafeUserWithRole> {
-        const currentUser = await this.userRepository.findById(BigInt(user.id));
+    async getCurrentUserDetils(user: AuthUser): Promise<SafeUserWithRole> {
+      const currentUser = await this.userRepository.getUserDetails(user.userId);
 
-        if (!currentUser) {
-            throw new BadRequestError("User not found");
-        }
+      if (!currentUser) {
+          throw new BadRequestError("User not found");
+      }
 
-        return currentUser;
-    async updatePassword(
-        user: UserTokenPayload,
-        data: UpdatePasswordDto
-    ): Promise<void> {
-        const userId = BigInt(user.id);
+      return currentUser;
+    }
 
-        const existingUser = await this.userRepository.findById(userId);
 
-        if (!existingUser) {
-            throw new UnauthorizedError("User not found");
-        }
+    async updatePassword(user: AuthUser, data: UpdatePasswordDto): Promise<void> {
+      const existingUser = await this.userRepository.findById(user.userId);
 
-        const isOldPasswordValid = await comparePassword(
-            data.oldPassword,
-            existingUser.passwordHash
-        );
+      if(!existingUser) {
+        throw new NotfoundError("User not found");
+      }
 
-        if (!isOldPasswordValid) {
-            throw new BadRequestError("Old password is incorrect");
-        }
+      const isOldPasswordValid: boolean = await comparePassword(
+        data.oldPassword,
+        existingUser.passwordHash
+      );
 
-        const isSamePassword = await comparePassword(
-            data.newPassword,
-            existingUser.passwordHash
-        );
+      if(!isOldPasswordValid) {
+        throw new BadRequestError("Old password is incorrect");
+      }
 
-        if (isSamePassword) {
-            throw new BadRequestError(
-                "New password must be different from old password"
-            );
-        }
+      const passwordHash: string = await hashPassword(data.newPassword);
 
-        const passwordHash = await hashPassword(data.newPassword);
-
-        await this.userRepository.updatePassword(
-            userId,
-            passwordHash
-        );
+      await this.userRepository.updatePassword(
+        user.userId,
+        passwordHash
+      );
     }
 }

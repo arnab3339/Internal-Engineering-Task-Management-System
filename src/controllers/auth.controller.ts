@@ -8,6 +8,7 @@ import {
 import { sendSuccess } from "../utils/helpers/response.helper.js";
 import { COOKIE_MAX_AGE, COOKIE_SECURE, COOKIE_SAME_SITE } from "../configs/server.config.js";
 import { UnauthorizedError } from "../utils/errors/app.error.js";
+import { AuthenticatedRequest } from "../types/express.js";
 
 export class AuthController {
     private readonly authService: IAuthService;
@@ -16,11 +17,7 @@ export class AuthController {
         this.authService = authService;
     }
 
-    async signInHandler(
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ): Promise<void> {
+    async signInHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const data = req.body as SignInDto;
             const token = await this.authService.signIn(data);
@@ -40,23 +37,17 @@ export class AuthController {
 
     async getCurrentUser(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            if (!req.user) {
-                throw new UnauthorizedError("Authentication required");
-            }
+            const { user } = req as AuthenticatedRequest;
 
-            const user = await this.authService.getCurrentUser(req.user);
+            const currentUser = await this.authService.getCurrentUserDetils(user);
 
-            sendSuccess(res, user, StatusCodes.OK, "Current user fetched successfully");
+            sendSuccess(res, currentUser, StatusCodes.OK, "Current user fetched successfully");
         } catch (error) {
             next(error);
         }
     }
 
-    async updatePasswordHandler(
-        req: Request,
-        res: Response,
-        next: NextFunction
-    ): Promise<void> {
+    async updatePasswordHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             if (!req.user) {
                 throw new UnauthorizedError("Authentication required");
