@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { IAuthService } from "../services/auth.service.js";
 import { SignInDto } from "../dtos/auth.dto.js";
 import { sendSuccess } from "../utils/helpers/response.helper.js";
+import { COOKIE_MAX_AGE, COOKIE_SECURE, COOKIE_SAME_SITE } from "../configs/server.config.js";
 
 export class AuthController {
     private readonly authService: IAuthService;
@@ -15,9 +16,16 @@ export class AuthController {
         try {
             const data = req.body as SignInDto;
 
-            const result = await this.authService.signIn(data);
+            const token = await this.authService.signIn(data);
 
-            sendSuccess(res, result, StatusCodes.OK, 'Signed in successfully');
+            res.cookie('accessToken', token, {
+                httpOnly: true,
+                secure: COOKIE_SECURE,
+                sameSite: COOKIE_SAME_SITE,
+                maxAge: COOKIE_MAX_AGE,
+            });
+
+            sendSuccess(res, null, StatusCodes.OK, 'Signed in successfully');
         } catch (error) {
             next(error);
         }
