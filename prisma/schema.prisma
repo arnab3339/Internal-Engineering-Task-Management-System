@@ -35,6 +35,29 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   role Role @relation(fields: [roleId], references: [id])
-
+  projects Project[]
   @@map("users")
+}
+
+model Project {
+  id BigInt @id @default(autoincrement())
+  name String @db.VarChar(200)
+  description String? @db.Text
+  status ProjectStatus @default(PLANNING)
+  createdBy BigInt @map("created_by")
+  startDate DateTime? @map("start_date") @db.Date
+  targetEndDate DateTime? @map("target_end_date") @db.Date
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  creator User @relation(fields: [createdBy], references: [id])
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
 }
