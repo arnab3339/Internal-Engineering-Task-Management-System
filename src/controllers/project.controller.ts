@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ProjectService } from "../services/project.service.js";
 import { sendSuccess } from "../utils/helpers/response.helper.js";
-import { AuthenticatedRequest } from "../types/auth.type.js";
-
+import { AuthenticatedRequest } from "../types/express.js";
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
