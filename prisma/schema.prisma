@@ -71,7 +71,7 @@ model Task {
   status      String    @db.VarChar(50)
   priority    String    @db.VarChar(50)
   ownerId     BigInt?   @map("owner_id")
-  dueDate     DateTime? @map("due_date")
+  deadline     DateTime? @map("deadline")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
