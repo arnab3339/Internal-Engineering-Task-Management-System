@@ -45,10 +45,17 @@ export class ProjectRepository implements IProjectRepository {
 }
 async getProjectById(
   projectId: bigint
-): Promise<Prisma.ProjectGetPayload<{}> | null> {
+): Promise<Prisma.ProjectGetPayload<{
+  include: {
+    projectMembers: true;
+  };
+}> | null> {
   return prisma.project.findUnique({
     where: {
       id: projectId,
+    },
+    include: {
+      projectMembers: true,
     },
   });
 }
