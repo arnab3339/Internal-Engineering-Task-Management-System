@@ -1,0 +1,25 @@
+import { z } from "zod";
+
+export const createProjectSchema = z.object({
+  name: z
+    .string()
+    .min(1, "name is required")
+    .max(200, "name must not exceed 200 characters"),
+
+  description: z
+    .string()
+    .max(65535, "description must not exceed 65535 characters")
+    .optional(),
+
+  startDate: z
+    .string()
+    .date("startDate must be a valid date")
+    .optional(),
+
+  targetEndDate: z
+    .string()
+    .date("targetEndDate must be a valid date")
+    .optional(),
+});
+
+export type CreateProjectDto = z.infer<typeof createProjectSchema>;
