@@ -43,7 +43,6 @@ model User {
   @@map("users")
 }
 
-
 model ProjectMember {
   id BigInt @id @default(autoincrement())
 
@@ -60,6 +59,7 @@ model ProjectMember {
 
   @@map("project_members")
 }
+
 model Project {
   id            BigInt        @id @default(autoincrement())
   name          String        @db.VarChar(200)
