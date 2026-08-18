@@ -9,9 +9,9 @@ import { UserRepository } from "../../repositories/user.repository.js";
 import { validateRequestBody, validateRequestParams } from "../../middlewares/validate.middleware.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
-import { projectIdParamSchema, addProjectMemberSchema } from "../../dtos/projectMember.dto.js";
+import { projectIdParamSchema, addProjectMemberSchema} from "../../dtos/projectMember.dto.js";
 import { RoleName } from "../../types/role.type.js";
-
+import { updateProjectSchema } from "../../dtos/project.dto.js";
 const projectMemberController = new ProjectMemberController(
     new ProjectMemberService(
         new ProjectMemberRepository(), 
@@ -47,6 +47,13 @@ projectRouter.get(
   "/:id",
   authenticateUser,
   projectController.getProjectByIdHandler.bind(projectController)
+);
+projectRouter.patch(
+  "/:id",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestBody(updateProjectSchema),
+  projectController.updateProjectHandler.bind(projectController)
 );
 
 projectRouter.post(

@@ -4,6 +4,17 @@ import { CreateProjectDto } from "../dtos/project.dto.js";
 export interface IProjectRepository {
   create(data: CreateProjectDto, createdBy: bigint): Promise<Project>;
   getAllProjects(): Promise<Project[]>;
+  getProjectById(
+  projectId: bigint
+): Promise<Prisma.ProjectGetPayload<{
+  include: {
+    members: true;
+  };
+}> | null>;
+ updateProject(
+  projectId: bigint,
+  data: Prisma.ProjectUpdateInput
+): Promise<Prisma.ProjectGetPayload<{}>>;
   getProjectById(projectId: bigint): Promise<Project | null>;
   isProjectExist(projectId: bigint): Promise<boolean>;
 }
@@ -30,6 +41,39 @@ export class ProjectRepository implements IProjectRepository {
   }
 
   async getAllProjects(): Promise<Project[]> {
+  return prisma.project.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+async getProjectById(
+  projectId: bigint
+): Promise<Prisma.ProjectGetPayload<{
+  include: {
+    members: true;
+  };
+}> | null> {
+  return prisma.project.findUnique({
+    where: {
+      id: projectId,
+    },
+    include: {
+      members: true,
+    },
+  });
+}
+async updateProject(
+  projectId: bigint,
+  data: Prisma.ProjectUpdateInput
+): Promise<Prisma.ProjectGetPayload<{}>> {
+  return prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data,
+  });
+}
     return prisma.project.findMany({
       orderBy: {
         createdAt: "desc",
