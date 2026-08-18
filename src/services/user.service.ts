@@ -1,14 +1,15 @@
 import { Prisma } from "../../generated/prisma/client.js";
 import { CreateUserDto, UpdateUserDto } from "../dtos/user.dto.js";
 import { IUserRepository } from "../repositories/user.repository.js";
-import { SafeUser } from "../types/auth.type.js";
 import { ConflictError, NotfoundError, UnauthorizedError } from "../utils/errors/app.error.js";
 import { hashPassword } from "../utils/helpers/password.helper.js";
+import { SafeUser, SafeUserWithRole } from "../types/auth.type.js";
 
 export interface IUserService {
   createUser(data: CreateUserDto): Promise<SafeUser>;
   updateUser(loggedInUserId: bigint, targetUserId: bigint, data: UpdateUserDto): Promise<SafeUser>;
   getAllUsers(): Promise<SafeUser[]>;
+  findUserById(id: bigint): Promise<SafeUserWithRole>;
 }
 
 export class UserService implements IUserService {
@@ -64,4 +65,15 @@ export class UserService implements IUserService {
   async getAllUsers(): Promise<SafeUser[]> {
   return await this.userRepository.getAllUsers();
 }
+
+async findUserById(id: bigint): Promise<SafeUserWithRole> {
+    const user = await this.userRepository.getUserDetails(id);
+
+    if (!user) {
+      throw new NotfoundError("User not found");
+    }
+
+    return user;
+  }
+
 }
