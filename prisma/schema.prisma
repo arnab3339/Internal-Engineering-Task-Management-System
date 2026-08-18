@@ -36,7 +36,7 @@ model User {
 
   role     Role      @relation(fields: [roleId], references: [id])
   projects Project[]
-  tasks Task[]
+  tasks    Task[]
 
   projectMemberships  ProjectMember[] @relation("ProjectMemberUser")
   addedProjectMembers ProjectMember[] @relation("ProjectMemberAddedBy")
@@ -93,7 +93,7 @@ model Task {
   status      String    @db.VarChar(50)
   priority    String    @db.VarChar(50)
   ownerId     BigInt?   @map("owner_id")
-  deadline     DateTime? @map("deadline")
+  deadline    DateTime? @map("deadline")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
 
