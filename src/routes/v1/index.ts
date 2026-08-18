@@ -8,5 +8,5 @@ const router = Router();
 router.use("/users", userRouter);
 router.use("/roles", roleRouter);
 router.use("/auth", authRouter);
-router.use(projectRouter);
+router.use("/projects", projectRouter);
 export default router;

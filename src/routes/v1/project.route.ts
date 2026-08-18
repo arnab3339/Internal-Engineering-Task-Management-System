@@ -12,7 +12,7 @@ const projectService = new ProjectService(projectRepository);
 const projectController = new ProjectController(projectService);
 
 router.post(
-  "/projects",
+  "/",
   authenticateUser,
   authorizeUser(RoleName.ADMIN),
   projectController.createProjectHandler.bind(projectController)
