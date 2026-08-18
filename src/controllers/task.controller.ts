@@ -20,4 +20,26 @@ export class TaskController {
       next(error);
     }
   }
+  async createTaskHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+ ) {
+  try {
+    const taskData = req.body;
+
+    const newTask = await this.taskService.createTask(taskData);
+
+const responseData = {
+  ...newTask,
+  deadline: newTask.deadline
+    ? newTask.deadline.toISOString().split("T")[0]
+    : null,
+};
+
+sendSuccess(res, responseData, 201, "Task created successfully");
+  } catch (error) {
+    next(error);
+  }
+}
 }
