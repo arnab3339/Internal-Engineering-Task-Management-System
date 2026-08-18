@@ -22,7 +22,7 @@ export class AuthService implements IAuthService {
         const user: UserWithRole | null = await this.userRepository.findByEmail(data.email);
 
         if (!user) {
-            throw new BadRequestError("Invalid email or password");
+            throw new BadRequestError("User not exist");
         }
 
         const isPasswordValid = await comparePassword(
@@ -31,7 +31,7 @@ export class AuthService implements IAuthService {
         );
 
         if (!isPasswordValid) {
-            throw new BadRequestError("Invalid email or password");
+            throw new BadRequestError("Invalid password");
         }
 
         const token: string = signToken({
