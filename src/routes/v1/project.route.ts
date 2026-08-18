@@ -33,13 +33,13 @@ projectRouter.post(
     authorizeUser(RoleName.ADMIN),
     projectController.createProjectHandler.bind(projectController)
 );
-router.get(
+projectRouter.get(
   "/",
   authenticateUser,
   authorizeUser(RoleName.ADMIN),
   projectController.getAllProjectsHandler.bind(projectController)
 );
-router.get(
+projectRouter.get(
   "/:id",
   authenticateUser,
   projectController.getProjectByIdHandler.bind(projectController)
