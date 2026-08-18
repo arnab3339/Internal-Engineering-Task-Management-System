@@ -5,7 +5,6 @@ import { ProjectMemberRepository } from "../../repositories/projectMember.reposi
 import { ProjectController } from "../../controllers/project.controller.js";
 import { ProjectService } from "../../services/project.service.js";
 import { ProjectRepository } from "../../repositories/project.repository.js";
-import { UserService } from "../../services/user.service.js";
 import { UserRepository } from "../../repositories/user.repository.js";
 import { validateRequestBody, validateRequestParams } from "../../middlewares/validate.middleware.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
@@ -15,15 +14,18 @@ import { RoleName } from "../../types/role.type.js";
 import { updateProjectSchema } from "../../dtos/project.dto.js";
 const projectMemberController = new ProjectMemberController(
     new ProjectMemberService(
-        new ProjectMemberRepository(),
-        new UserService(new UserRepository())
+        new ProjectMemberRepository(), 
+        new ProjectRepository(),
+        new UserRepository()
     )
 );
 
-const projectRepository = new ProjectRepository();
-const projectService = new ProjectService(projectRepository);
-const projectController = new ProjectController(projectService);
-
+const projectController = new ProjectController(
+    new ProjectService(
+        new ProjectRepository(), 
+        new ProjectMemberRepository()
+    )
+);
 
 const projectRouter = Router();
 
@@ -33,12 +35,14 @@ projectRouter.post(
     authorizeUser(RoleName.ADMIN),
     projectController.createProjectHandler.bind(projectController)
 );
+
 projectRouter.get(
   "/",
   authenticateUser,
   authorizeUser(RoleName.ADMIN),
   projectController.getAllProjectsHandler.bind(projectController)
 );
+
 projectRouter.get(
   "/:id",
   authenticateUser,

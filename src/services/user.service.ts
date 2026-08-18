@@ -63,10 +63,10 @@ export class UserService implements IUserService {
   }
 
   async getAllUsers(): Promise<SafeUser[]> {
-  return await this.userRepository.getAllUsers();
-}
+    return await this.userRepository.getAllUsers();
+  }
 
-async findUserById(id: bigint): Promise<SafeUserWithRole> {
+  async findUserById(id: bigint): Promise<SafeUserWithRole> {
     const user = await this.userRepository.getUserDetails(id);
 
     if (!user) {
@@ -75,5 +75,4 @@ async findUserById(id: bigint): Promise<SafeUserWithRole> {
 
     return user;
   }
-
 }

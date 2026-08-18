@@ -5,13 +5,13 @@ import { AuthenticatedRequest } from "../types/express.js";
 import { RoleName } from "../types/role.type.js";
 
 export class ProjectController {
-  constructor(private readonly projectService: ProjectService) {}
+  private readonly projectService: ProjectService;
 
-  async createProjectHandler(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  constructor(projectService: ProjectService) {
+    this.projectService = projectService;
+  }
+
+  async createProjectHandler(req: Request, res: Response, next: NextFunction) {
     try {
       const { user } = req as AuthenticatedRequest;
 
@@ -25,38 +25,32 @@ export class ProjectController {
       next(error);
     }
   }
-  async getAllProjectsHandler(
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const projects = await this.projectService.getAllProjects();
 
-    sendSuccess(res, projects, 200, "Projects fetched successfully");
-  } catch (error) {
-    next(error);
+  async getAllProjectsHandler(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const projects = await this.projectService.getAllProjects();
+
+      sendSuccess(res, projects, 200, "Projects fetched successfully");
+    } catch (error) {
+      next(error);
+    }
   }
-}
-async getProjectByIdHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { user } = req as AuthenticatedRequest;
 
-    const projectId = BigInt(req.params.id as string);
+  async getProjectByIdHandler(req: Request, res: Response,next: NextFunction) {
+    try {
+      const { user } = req as AuthenticatedRequest;
+      const projectId = BigInt(req.params.id as string);
 
-    const project = await this.projectService.getProjectById(
-      projectId,
-      user.userId,
-      user.role as RoleName
-    );
+      const project = await this.projectService.getProjectById(
+        projectId,
+        user.userId,
+        user.role as RoleName
+      );
 
-    sendSuccess(res, project, 200, "Project fetched successfully");
-  } catch (error) {
-    next(error);
+      sendSuccess(res, project, 200, "Project fetched successfully");
+    } catch (error) {
+      next(error);
+    }
   }
 }
 async updateProjectHandler(

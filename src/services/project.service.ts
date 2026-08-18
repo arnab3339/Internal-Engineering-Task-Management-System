@@ -2,14 +2,11 @@ import { CreateProjectDto,UpdateProjectDto } from "../dtos/project.dto.js";
 import { IProjectRepository } from "../repositories/project.repository.js";
 import { Project } from "../../generated/prisma/client.js";
 import { RoleName } from "../types/role.type.js";
-import { Prisma } from "../../generated/prisma/client.js";
 import { NotfoundError,UnauthorizedError } from "../utils/errors/app.error.js";
+import { IProjectMemberRepository } from "../repositories/projectMember.repository.js";
 
 export interface IProjectService {
-  createProject(
-    data: CreateProjectDto,
-    createdBy: bigint
-  ): Promise<Project>;
+  createProject(data: CreateProjectDto, createdBy: bigint): Promise<Project>;
   getAllProjects(): Promise<Project[]>;
   getProjectById(
   projectId: bigint,
@@ -24,54 +21,38 @@ updateProject(
   projectId: bigint,
   data: UpdateProjectDto
 ): Promise<Prisma.ProjectGetPayload<{}>>;
+  getProjectById(projectId: bigint, userId: bigint, role: RoleName): Promise<Project>;
 }
 
 export class ProjectService implements IProjectService {
   private readonly projectRepository: IProjectRepository;
+  private readonly projectMemberRepository: IProjectMemberRepository;
 
-  constructor(projectRepository: IProjectRepository) {
+  constructor(projectRepository: IProjectRepository, projectMemberRepository: IProjectMemberRepository) {
     this.projectRepository = projectRepository;
+    this.projectMemberRepository = projectMemberRepository;
   }
 
-  async createProject(
-    data: CreateProjectDto,
-    createdBy: bigint
-  ): Promise<Project> {
+  async createProject(data: CreateProjectDto, createdBy: bigint): Promise<Project> {
     return await this.projectRepository.create(data, createdBy);
   }
-   async getAllProjects(): Promise<Project[]> {
+
+  async getAllProjects(): Promise<Project[]> {
     return await this.projectRepository.getAllProjects();
   }
-  async getProjectById(
-  projectId: bigint,
-  userId: bigint,
-  role: RoleName
-): Promise<Prisma.ProjectGetPayload<{
-  include: {
-    members: true;
-  };
-}> >{
-  const project = await this.projectRepository.getProjectById(projectId);
 
-  if (!project) {
-    throw new NotfoundError("Project not found");
-  }
+  async getProjectById(projectId: bigint, userId: bigint, role: RoleName): Promise<Project> {
+    const project: Project | null = await this.projectRepository.getProjectById(projectId);
 
-  if (role === RoleName.ADMIN) {
-    return project;
-  }
+    if (!project) {
+      throw new NotfoundError("Project not found");
+    }
 
-  const isMember = project.members.some(
-    (member) =>
-      member.userId === userId &&
-      member.removedAt === null
-  );
+    if (role === RoleName.ADMIN) {
+      return project;
+    }
 
-  if (!isMember) {
-    throw new UnauthorizedError(
-      "You are not authorized to view this project"
-    );
-  }
+    const isProjectMember: boolean = await this.projectMemberRepository.findActiveMembership(projectId, userId);
 
   return project;
 }
@@ -105,4 +86,10 @@ async updateProject(
     updateData
   );
 }
+    if(!isProjectMember) {
+      throw new UnauthorizedError("You are not authorized to view this project");
+    }
+
+    return project;
+  }
 }

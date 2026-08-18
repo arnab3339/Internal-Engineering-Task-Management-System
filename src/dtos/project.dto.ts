@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ProjectStatus } from "../../generated/prisma/enums.js";
 
 export const createProjectSchema = z.object({
   name: z
@@ -9,6 +10,10 @@ export const createProjectSchema = z.object({
   description: z
     .string()
     .max(65535, "description must not exceed 65535 characters")
+    .optional(),
+
+  status: z
+    .enum(ProjectStatus)
     .optional(),
 
   startDate: z

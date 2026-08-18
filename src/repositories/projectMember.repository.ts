@@ -3,7 +3,7 @@ import { prisma } from "../configs/db.config.js";
 
 export interface IProjectMemberRepository {
     create(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember>;
-    findActiveMembership(projectId: bigint, userId: bigint): Promise<ProjectMember | null>;
+    findActiveMembership(projectId: bigint, userId: bigint): Promise<boolean>;
 }
 
 export class ProjectMemberRepository implements IProjectMemberRepository {
@@ -19,13 +19,17 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
         });
     }
 
-    async findActiveMembership(projectId: bigint, userId: bigint): Promise<ProjectMember | null> {
-        return prisma.projectMember.findFirst({
+    async findActiveMembership(projectId: bigint, userId: bigint): Promise<boolean> {
+        const membership = prisma.projectMember.findFirst({
             where: {
                 projectId,
                 userId,
                 removedAt: null
-            }
+            },
+
+            select: { id: true }
         });
+
+        return membership !== null;
     }
 }
