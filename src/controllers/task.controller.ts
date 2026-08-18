@@ -42,4 +42,17 @@ sendSuccess(res, responseData, 201, "Task created successfully");
     next(error);
   }
 }
+
+  async updateTaskHandler(req: Request, res: Response, next: NextFunction) {
+    try {
+      const taskId = req.params.taskId as string;
+      const updateData = req.body;
+
+      const updatedTask = await this.taskService.updateTask(BigInt(taskId), updateData);
+
+      sendSuccess(res, updatedTask, 200, "Task updated successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
 }
