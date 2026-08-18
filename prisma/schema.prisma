@@ -85,19 +85,31 @@ enum ProjectStatus {
   ARCHIVED
 }
 
-model Task {
-  id          BigInt    @id @default(autoincrement())
-  projectId   BigInt    @map("project_id")
-  title       String    @db.VarChar(255)
-  description String?   @db.Text
-  status      String    @db.VarChar(50)
-  priority    String    @db.VarChar(50)
-  ownerId     BigInt?   @map("owner_id")
-  deadline    DateTime? @map("deadline")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  COMPLETED
+}
 
-  owner User? @relation(fields: [ownerId], references: [id])
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Task {
+  id          BigInt       @id @default(autoincrement())
+  projectId   BigInt       @map("project_id")
+  title       String       @db.VarChar(255)
+  description String?      @db.Text
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  ownerId     BigInt?      @map("owner_id")
+  deadline    DateTime?    @map("deadline")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  owner       User?        @relation(fields: [ownerId], references: [id])
 
   @@map("tasks")
 }
