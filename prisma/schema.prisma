@@ -7,6 +7,28 @@ datasource db {
   provider = "mysql"
 }
 
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  CHANGES_REQUESTED
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
 model Role {
   id          BigInt  @id @default(autoincrement())
   name        String  @unique @db.VarChar(50)
@@ -58,6 +80,7 @@ model ProjectMember {
   user        User    @relation("ProjectMemberUser", fields: [userId], references: [id], onDelete: Cascade)
   addedByUser User    @relation("ProjectMemberAddedBy", fields: [addedBy], references: [id])
 
+  @@index([projectId, userId, removedAt])
   @@map("project_members")
 }
 
@@ -77,28 +100,6 @@ model Project {
   tasks   Task[]
 
   @@map("projects")
-}
-
-enum ProjectStatus {
-  PLANNING
-  ACTIVE
-  COMPLETED
-  ARCHIVED
-}
-
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  IN_REVIEW
-  CHANGES_REQUESTED
-  COMPLETED
-}
-
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
 }
 
 model Task {

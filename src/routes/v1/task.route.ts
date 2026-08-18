@@ -4,7 +4,7 @@ import { TaskService } from "../../services/task.service.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
 import { validateRequestParams,validateRequestBody } from "../../middlewares/validate.middleware.js";
-import { taskIdSchema,updateTaskSchema } from "../../dtos/task.dto.js";
+import { createTaskSchema, taskIdSchema,updateTaskSchema } from "../../dtos/task.dto.js";
 import { RoleName } from "../../types/role.type.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 
@@ -25,19 +25,15 @@ taskRouter.post(
   authorizeUser(RoleName.ADMIN),
   validateRequestBody(createTaskSchema),
   taskController.createTaskHandler.bind(taskController)
- "/:taskId",
- authenticateUser,
-  authorizeUser(RoleName.ADMIN),
- validateRequestParams(taskIdSchema),
- taskController.getTaskByIdHandler.bind(taskController)
 );
+
 taskRouter.patch(
-    "/:taskId",
-    authenticateUser,
-    authorizeUser(RoleName.ADMIN),
-    validateRequestParams(taskIdSchema),
-    validateRequestBody(updateTaskSchema),
-    taskController.updateTaskHandler.bind(taskController)
+  "/:taskId",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestParams(taskIdSchema),
+  validateRequestBody(updateTaskSchema),
+  taskController.updateTaskHandler.bind(taskController)
 );
 
 export default taskRouter;

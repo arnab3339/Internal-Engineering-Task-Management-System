@@ -18,6 +18,8 @@ export interface IUserRepository {
   updateUser(id: bigint, data: Prisma.UserUpdateInput): Promise<SafeUser>;
 
   getAllUsers(): Promise<SafeUser[]>;
+
+  isUserExist(id: bigint): Promise<boolean>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -99,10 +101,19 @@ export class UserRepository implements IUserRepository {
   }
 
   async getAllUsers(): Promise<SafeUser[]> {
-  return prisma.user.findMany({
-    omit: {
-      passwordHash: true,
-    },
-  });
-}
+    return prisma.user.findMany({
+      omit: {
+        passwordHash: true,
+      },
+    });
+  }
+
+  async isUserExist(id: bigint): Promise<boolean> {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true }
+    });
+
+    return user !== null;
+  }
 }

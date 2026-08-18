@@ -1,4 +1,3 @@
-
 import { prisma } from "../configs/db.config.js";
 import { Prisma, Task } from "../../generated/prisma/client.js";
 
@@ -16,19 +15,19 @@ export class TaskRepository implements ITaskRepository {
       },
     });
   }
-  async create(data: any): Promise<Task> {
+
+  async create(data: Prisma.TaskCreateInput): Promise<Task> {
     return prisma.task.create({
-      data,
+      data
     });
   }
-}
 
   async updateTask(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task> {
     return prisma.task.update({
       where: {
         id: taskId,
       },
-      data,
+      data
     });
   }
 }

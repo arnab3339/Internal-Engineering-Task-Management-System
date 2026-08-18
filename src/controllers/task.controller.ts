@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { TaskService } from "../services/task.service.js";
 import { sendSuccess } from "../utils/helpers/response.helper.js";
+import { AuthenticatedRequest } from "../types/express.js";
 
 export class TaskController {
   private readonly taskService: TaskService;
@@ -20,28 +21,19 @@ export class TaskController {
       next(error);
     }
   }
-  async createTaskHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
- ) {
-  try {
-    const taskData = req.body;
 
-    const newTask = await this.taskService.createTask(taskData);
+  async createTaskHandler(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { user } = req as AuthenticatedRequest;
+      const taskData = req.body;
 
-const responseData = {
-  ...newTask,
-  deadline: newTask.deadline
-    ? newTask.deadline.toISOString().split("T")[0]
-    : null,
-};
+      const task = await this.taskService.createTask(taskData, user.userId);
 
-sendSuccess(res, responseData, 201, "Task created successfully");
-  } catch (error) {
-    next(error);
+      sendSuccess(res, task, 201, "Task created successfully");
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
   async updateTaskHandler(req: Request, res: Response, next: NextFunction) {
     try {
