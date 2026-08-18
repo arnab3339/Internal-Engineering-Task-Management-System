@@ -37,7 +37,28 @@ model User {
   role     Role      @relation(fields: [roleId], references: [id])
   projects Project[]
   tasks Task[]
+
+  projectMemberships  ProjectMember[] @relation("ProjectMemberUser")
+  addedProjectMembers ProjectMember[] @relation("ProjectMemberAddedBy")
+
   @@map("users")
+}
+
+model ProjectMember {
+  id BigInt @id @default(autoincrement())
+
+  projectId BigInt @map("project_id")
+  userId    BigInt @map("user_id")
+  addedBy   BigInt @map("added_by")
+
+  joinedAt  DateTime  @default(now()) @map("joined_at")
+  removedAt DateTime? @map("removed_at")
+
+  project     Project @relation(fields: [projectId], references: [id])
+  user        User    @relation("ProjectMemberUser", fields: [userId], references: [id])
+  addedByUser User    @relation("ProjectMemberAddedBy", fields: [addedBy], references: [id])
+
+  @@map("project_members")
 }
 
 model Project {
@@ -51,7 +72,8 @@ model Project {
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
-  creator User @relation(fields: [createdBy], references: [id])
+  creator User            @relation(fields: [createdBy], references: [id])
+  members ProjectMember[]
 
   @@map("projects")
 }
