@@ -30,4 +30,15 @@ export class UserController {
       next(error);
     }
   }
+
+
+  async getAllUsersHandler(req: Request, res: Response, next: NextFunction) {
+  try {
+    const users: SafeUser[] = await this.userService.getAllUsers();
+
+    sendSuccess(res, users, 200, "Users fetched successfully");
+  } catch (error) {
+    next(error);
+  }
+}
 }

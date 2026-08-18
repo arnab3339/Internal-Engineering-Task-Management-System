@@ -16,6 +16,8 @@ export interface IUserRepository {
   updatePassword(id: bigint, passwordHash: string): Promise<SafeUser>;
 
   updateUser(id: bigint, data: Prisma.UserUpdateInput): Promise<SafeUser>;
+
+  getAllUsers(): Promise<SafeUser[]>;
 }
 
 export class UserRepository implements IUserRepository {
@@ -95,4 +97,12 @@ export class UserRepository implements IUserRepository {
       }
     });
   }
+
+  async getAllUsers(): Promise<SafeUser[]> {
+  return prisma.user.findMany({
+    omit: {
+      passwordHash: true,
+    },
+  });
+}
 }
