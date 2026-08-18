@@ -17,5 +17,10 @@ router.post(
   authorizeUser(RoleName.ADMIN),
   projectController.createProjectHandler.bind(projectController)
 );
+router.get(
+  "/",
+  authenticateUser,
+  projectController.getAllProjectsHandler.bind(projectController)
+);
 
 export default router;
