@@ -32,7 +32,7 @@ export class UserController {
   }
 
 
-  async getAllUsersHandler(req: Request, res: Response, next: NextFunction) {
+  async getAllUsersHandler(_req: Request, res: Response, next: NextFunction) {
   try {
     const users: SafeUser[] = await this.userService.getAllUsers();
 
