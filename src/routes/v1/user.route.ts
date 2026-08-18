@@ -20,6 +20,14 @@ userRouter.post(
     validateRequestBody(createUserSchema), 
     userController.createUserHandler.bind(userController)
 );
+//
+
+userRouter.get(
+    "/",
+    authenticateUser,
+    authorizeUser(RoleName.ADMIN),
+    userController.getAllUsersHandler.bind(userController)
+);
 
 userRouter.patch(
     "/:id", 

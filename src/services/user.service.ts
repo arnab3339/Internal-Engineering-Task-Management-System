@@ -8,6 +8,7 @@ import { hashPassword } from "../utils/helpers/password.helper.js";
 export interface IUserService {
   createUser(data: CreateUserDto): Promise<SafeUser>;
   updateUser(loggedInUserId: bigint, targetUserId: bigint, data: UpdateUserDto): Promise<SafeUser>;
+  getAllUsers(): Promise<SafeUser[]>;
 }
 
 export class UserService implements IUserService {
@@ -59,4 +60,8 @@ export class UserService implements IUserService {
       throw error;
     }
   }
+
+  async getAllUsers(): Promise<SafeUser[]> {
+  return await this.userRepository.getAllUsers();
+}
 }
