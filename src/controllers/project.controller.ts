@@ -26,7 +26,7 @@ export class ProjectController {
     }
   }
   async getAllProjectsHandler(
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -46,7 +46,7 @@ async getProjectByIdHandler(
   try {
     const { user } = req as AuthenticatedRequest;
 
-    const projectId = BigInt(req.params.id);
+    const projectId = BigInt(req.params.id as string);
 
     const project = await this.projectService.getProjectById(
       projectId,
