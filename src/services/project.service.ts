@@ -1,6 +1,8 @@
 import { CreateProjectDto } from "../dtos/project.dto.js";
 import { IProjectRepository } from "../repositories/project.repository.js";
 import { Project } from "../../generated/prisma/client.js";
+import { Prisma } from "../../generated/prisma/client.js";
+import { NotfoundError } from "../utils/errors/app.error.js";
 
 export interface IProjectService {
   createProject(
@@ -8,6 +10,7 @@ export interface IProjectService {
     createdBy: bigint
   ): Promise<Project>;
   getAllProjects(): Promise<Project[]>;
+  getProjectById(projectId: bigint): Promise<Prisma.ProjectGetPayload<{}>>;
 }
 
 export class ProjectService implements IProjectService {
@@ -25,5 +28,14 @@ export class ProjectService implements IProjectService {
   }
   async getAllProjects(): Promise<Project[]> {
   return await this.projectRepository.getAllProjects();
+}
+async getProjectById(projectId: bigint): Promise<Prisma.ProjectGetPayload<{}>> {
+  const project = await this.projectRepository.getProjectById(projectId);
+
+  if (!project) {
+    throw new NotfoundError("Project not found");
+  }
+
+  return project;
 }
 }

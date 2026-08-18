@@ -22,5 +22,11 @@ router.get(
   authenticateUser,
   projectController.getAllProjectsHandler.bind(projectController)
 );
+router.get(
+  "/:id",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  projectController.getProjectByIdHandler.bind(projectController)
+);
 
 export default router;

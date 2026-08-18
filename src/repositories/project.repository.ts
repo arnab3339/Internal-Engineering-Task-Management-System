@@ -8,6 +8,9 @@ export interface IProjectRepository {
     createdBy: bigint
   ): Promise<Project>;
   getAllProjects(): Promise<Project[]>;
+  getProjectById(
+  projectId: bigint
+): Promise<Prisma.ProjectGetPayload<{}> | null>;
 }
 
 export class ProjectRepository implements IProjectRepository {
@@ -37,6 +40,15 @@ export class ProjectRepository implements IProjectRepository {
   return prisma.project.findMany({
     orderBy: {
       createdAt: "desc",
+    },
+  });
+}
+async getProjectById(
+  projectId: bigint
+): Promise<Prisma.ProjectGetPayload<{}> | null> {
+  return prisma.project.findUnique({
+    where: {
+      id: projectId,
     },
   });
 }

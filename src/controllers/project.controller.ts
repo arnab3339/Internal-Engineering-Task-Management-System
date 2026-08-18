@@ -37,4 +37,19 @@ export class ProjectController {
     next(error);
   }
 }
+async getProjectByIdHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const projectId = BigInt(req.params.id);
+
+    const project = await this.projectService.getProjectById(projectId);
+
+    sendSuccess(res, project, 200, "Project fetched successfully");
+  } catch (error) {
+    next(error);
+  }
+}
 }
