@@ -59,4 +59,22 @@ async getProjectByIdHandler(
     next(error);
   }
 }
+async updateProjectHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const projectId = BigInt(req.params.id);
+
+    const project = await this.projectService.updateProject(
+      projectId,
+      req.body
+    );
+
+    sendSuccess(res, project, 200, "Project updated successfully");
+  } catch (error) {
+    next(error);
+  }
+}
 }

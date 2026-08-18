@@ -1,4 +1,4 @@
-import { CreateProjectDto } from "../dtos/project.dto.js";
+import { CreateProjectDto,UpdateProjectDto } from "../dtos/project.dto.js";
 import { IProjectRepository } from "../repositories/project.repository.js";
 import { Project } from "../../generated/prisma/client.js";
 import { RoleName } from "../types/role.type.js";
@@ -20,6 +20,10 @@ export interface IProjectService {
     members: true;
   };
 }>>;
+updateProject(
+  projectId: bigint,
+  data: UpdateProjectDto
+): Promise<Prisma.ProjectGetPayload<{}>>;
 }
 
 export class ProjectService implements IProjectService {
@@ -70,5 +74,35 @@ export class ProjectService implements IProjectService {
   }
 
   return project;
+}
+async updateProject(
+  projectId: bigint,
+  data: UpdateProjectDto
+): Promise<Prisma.ProjectGetPayload<{}>> {
+  const project = await this.projectRepository.getProjectById(projectId);
+
+  if (!project) {
+    throw new NotfoundError("Project not found");
+  }
+
+  const updateData: Prisma.ProjectUpdateInput = {
+    ...(data.name !== undefined && { name: data.name }),
+    ...(data.description !== undefined && {
+      description: data.description,
+    }),
+    ...(data.startDate !== undefined && {
+      startDate: data.startDate ? new Date(data.startDate) : null,
+    }),
+    ...(data.targetEndDate !== undefined && {
+      targetEndDate: data.targetEndDate
+        ? new Date(data.targetEndDate)
+        : null,
+    }),
+  };
+
+  return await this.projectRepository.updateProject(
+    projectId,
+    updateData
+  );
 }
 }

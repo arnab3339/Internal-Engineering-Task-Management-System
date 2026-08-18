@@ -15,6 +15,10 @@ export interface IProjectRepository {
     members: true;
   };
 }> | null>;
+ updateProject(
+  projectId: bigint,
+  data: Prisma.ProjectUpdateInput
+): Promise<Prisma.ProjectGetPayload<{}>>;
 }
 
 export class ProjectRepository implements IProjectRepository {
@@ -63,5 +67,15 @@ async getProjectById(
     },
   });
 }
-
+async updateProject(
+  projectId: bigint,
+  data: Prisma.ProjectUpdateInput
+): Promise<Prisma.ProjectGetPayload<{}>> {
+  return prisma.project.update({
+    where: {
+      id: projectId,
+    },
+    data,
+  });
+}
 }
