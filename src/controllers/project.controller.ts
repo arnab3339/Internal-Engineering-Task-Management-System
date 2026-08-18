@@ -24,4 +24,17 @@ export class ProjectController {
       next(error);
     }
   }
+  async getAllProjectsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const projects = await this.projectService.getAllProjects();
+
+    sendSuccess(res, projects, 200, "Projects fetched successfully");
+  } catch (error) {
+    next(error);
+  }
+}
 }

@@ -7,6 +7,7 @@ export interface IProjectService {
     data: CreateProjectDto,
     createdBy: bigint
   ): Promise<Project>;
+  getAllProjects(): Promise<Project[]>;
 }
 
 export class ProjectService implements IProjectService {
@@ -22,4 +23,7 @@ export class ProjectService implements IProjectService {
   ): Promise<Project> {
     return await this.projectRepository.create(data, createdBy);
   }
+  async getAllProjects(): Promise<Project[]> {
+  return await this.projectRepository.getAllProjects();
+}
 }

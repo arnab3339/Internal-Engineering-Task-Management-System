@@ -7,6 +7,7 @@ export interface IProjectRepository {
     data: CreateProjectDto,
     createdBy: bigint
   ): Promise<Project>;
+  getAllProjects(): Promise<Project[]>;
 }
 
 export class ProjectRepository implements IProjectRepository {
@@ -32,4 +33,11 @@ export class ProjectRepository implements IProjectRepository {
       },
     });
   }
+  async getAllProjects(): Promise<Project[]> {
+  return prisma.project.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
 }
