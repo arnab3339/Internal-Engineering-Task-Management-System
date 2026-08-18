@@ -13,6 +13,18 @@ const taskController = new TaskController(new TaskService(new TaskRepository()))
 const taskRouter = Router();
 
 taskRouter.get(
+  "/:taskId",
+  authenticateUser,
+  validateRequestParams(taskIdSchema),
+  taskController.getTaskByIdHandler.bind(taskController)
+);
+
+taskRouter.post(
+  "/",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestBody(createTaskSchema),
+  taskController.createTaskHandler.bind(taskController)
  "/:taskId",
  authenticateUser,
   authorizeUser(RoleName.ADMIN),
