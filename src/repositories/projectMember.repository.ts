@@ -2,12 +2,18 @@ import { Prisma, ProjectMember } from "../../generated/prisma/client.js";
 import { prisma } from "../configs/db.config.js";
 
 export interface IProjectMemberRepository {
-    create(data: Prisma.ProjectMemberCreateInput): Promise<ProjectMember>;
+    create(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember>;
     findActiveMembership(projectId: bigint, userId: bigint): Promise<ProjectMember | null>;
 }
 
 export class ProjectMemberRepository implements IProjectMemberRepository {
-    async create(data: Prisma.ProjectMemberCreateInput): Promise<ProjectMember> {
+    async create(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember> {
+        const data: Prisma.ProjectMemberCreateInput = {
+            project: { connect: { id: projectId } },
+            user: { connect: { id: userId } },
+            addedByUser: { connect: { id: addedBy } },
+        };
+
         return await prisma.projectMember.create({
             data
         });

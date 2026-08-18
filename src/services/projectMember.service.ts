@@ -33,14 +33,9 @@ export class ProjectMemberService implements IProjectMemberService {
             throw new ConflictError("User is already an active member of this project");
         }
 
-        const data: Prisma.ProjectMemberCreateInput = {
-            project: { connect: { id: projectId } },
-            user: { connect: { id: userId } },
-            addedByUser: { connect: { id: addedBy } },
-        };
 
         try {
-            return await this.projectMemberRepository.create(data);
+            return await this.projectMemberRepository.create(projectId, userId, addedBy);
         } catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError) {
                 if (error.code === "P2002") {
