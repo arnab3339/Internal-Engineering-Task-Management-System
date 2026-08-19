@@ -11,7 +11,12 @@ import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 const taskController = new TaskController(new TaskService(new TaskRepository()));
 
 const taskRouter = Router();
-
+taskRouter.get(
+  "/",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN, RoleName.DEVELOPER),
+  taskController.getTasksHandler.bind(taskController)
+);
 taskRouter.get(
   "/:taskId",
   authenticateUser,
