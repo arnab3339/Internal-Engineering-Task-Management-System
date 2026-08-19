@@ -1,9 +1,10 @@
 import { Prisma, ProjectMember } from "../../generated/prisma/client.js";
-import { IProjectMemberRepository, ProjectMemberWithUser} from "../repositories/projectMember.repository.js";
+import { IProjectMemberRepository} from "../repositories/projectMember.repository.js";
 import { IProjectRepository } from "../repositories/project.repository.js";
 import { IUserRepository } from "../repositories/user.repository.js";
 import { RoleName } from "../types/role.type.js";
-import { BadRequestError, ConflictError, NotfoundError , UnauthorizedError} from "../utils/errors/app.error.js";
+import {  ConflictError, NotfoundError , UnauthorizedError} from "../utils/errors/app.error.js";
+import { ProjectMemberWithUser } from "../types/projectMember.type.js";
 
 export interface IProjectMemberService {
     addProjectMember(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember>;
@@ -41,7 +42,7 @@ export class ProjectMemberService implements IProjectMemberService {
             throw new NotfoundError(`No existing member found with this given id: ${userId}`);
         }
 
-        const existingMembership: boolean = await this.projectMemberRepository.findActiveMembership(projectId, userId);
+        const existingMembership = await this.projectMemberRepository.findActiveMembership(projectId, userId);
 
         if (existingMembership) {
             throw new ConflictError("User is already an active member of this project");
@@ -75,11 +76,12 @@ export class ProjectMemberService implements IProjectMemberService {
 
     
     async removeProjectMember(projectId: bigint, userId: bigint): Promise<void> {
-        const removed: boolean = await this.projectMemberRepository.removeMember(projectId, userId);
+        const membership = await this.projectMemberRepository.findActiveMembership(projectId, userId);
 
-        if (!removed) {
+        if (!membership) {
         throw new NotfoundError(`No active membership found for user ${userId} in project ${projectId}`);
         }
+        await this.projectMemberRepository.update(membership.id, { removedAt: new Date() });
     }
-
 }
+
