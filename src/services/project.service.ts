@@ -78,13 +78,13 @@ export class ProjectService implements IProjectService {
     );
   }
   async updateProjectStatus(projectId: bigint, data: UpdateProjectStatusDto): Promise<Project> {
-  const project = await this.projectRepository.getProjectById(projectId);
+    const project = await this.projectRepository.getProjectById(projectId);
 
-  if (!project) {
-    throw new NotfoundError("Project not found");
-  }
+    if (!project) {
+      throw new NotfoundError("Project not found");
+    }
     return await this.projectRepository.updateProject(projectId, {
-    status: data.status,
-  });
+      status: data.status,
+    });
   }
 }
