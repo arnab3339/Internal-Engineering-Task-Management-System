@@ -29,4 +29,9 @@ authRouter.patch(
     authController.updatePasswordHandler.bind(authController)
 );
 
+authRouter.post(
+    "/logout",
+    authController.logoutHandler.bind(authController)
+);
+
 export default authRouter;
