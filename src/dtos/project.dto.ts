@@ -55,3 +55,8 @@ export const updateProjectSchema = z.object({
 });
 
 export type UpdateProjectDto = z.infer<typeof updateProjectSchema>;
+export const updateProjectStatusSchema = z.object({
+  status: z.enum(ProjectStatus),
+});
+
+export type UpdateProjectStatusDto = z.infer<typeof updateProjectStatusSchema>;
