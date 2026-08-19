@@ -16,6 +16,7 @@ import { RoleName } from "../../types/role.type.js";
 const projectMemberController = new ProjectMemberController(
     new ProjectMemberService(
         new ProjectMemberRepository(),
+        new ProjectRepository(),
         new UserService(new UserRepository())
     )
 );
@@ -53,6 +54,13 @@ projectRouter.post(
     validateRequestParams(projectIdParamSchema),
     validateRequestBody(addProjectMemberSchema),
     projectMemberController.addProjectMemberHandler.bind(projectMemberController)
+);
+
+projectRouter.get(
+    "/:projectId/members",
+    authenticateUser,
+    validateRequestParams(projectIdParamSchema),
+    projectMemberController.getProjectMembersHandler.bind(projectMemberController)
 );
 
 export default projectRouter;

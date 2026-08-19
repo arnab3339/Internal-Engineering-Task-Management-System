@@ -3,8 +3,17 @@ import { prisma } from "../configs/db.config.js";
 
 export interface IProjectMemberRepository {
     create(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember>;
-    findActiveMembership(projectId: bigint, userId: bigint): Promise<ProjectMember | null>;
+    findActiveMembership(projectId: bigint, userId: bigint): Promise<boolean>;
+    findByProjectId(projectId: bigint): Promise<ProjectMemberWithUser[]>;
 }
+
+export type ProjectMemberWithUser = Prisma.ProjectMemberGetPayload<{
+    include: {
+        user: {
+            omit: { passwordHash: true };
+        };
+    };
+}>;
 
 export class ProjectMemberRepository implements IProjectMemberRepository {
     async create(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember> {
@@ -19,13 +28,29 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
         });
     }
 
-    async findActiveMembership(projectId: bigint, userId: bigint): Promise<ProjectMember | null> {
-        return prisma.projectMember.findFirst({
+    async findActiveMembership(projectId: bigint, userId: bigint): Promise<boolean> {
+        const membership = await prisma.projectMember.findFirst({
             where: {
                 projectId,
                 userId,
                 removedAt: null
-            }
+            },
+            select: {id : true}
         });
+
+        return membership !== null ;
     }
+
+    async findByProjectId(projectId: bigint): Promise<ProjectMemberWithUser[]> {
+    return await prisma.projectMember.findMany({
+        where: { projectId },
+        include: {
+            user: {
+                omit: { passwordHash: true }
+            }
+        },
+        orderBy: { joinedAt: "desc" }
+    });
+}
+
 }
