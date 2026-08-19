@@ -60,10 +60,10 @@ model User {
   projects Project[]
   tasks    Task[]
 
-  projectMemberships  ProjectMember[] @relation("ProjectMemberUser")
-  addedProjectMembers ProjectMember[] @relation("ProjectMemberAddedBy")
-  taskAssignments TaskAssignment[] @relation("TaskAssignmentDeveloper")
-  assignedTasks   TaskAssignment[] @relation("TaskAssignmentAssignedBy")
+  projectMemberships  ProjectMember[]  @relation("ProjectMemberUser")
+  addedProjectMembers ProjectMember[]  @relation("ProjectMemberAddedBy")
+  taskAssignments     TaskAssignment[] @relation("TaskAssignmentDeveloper")
+  assignedTasks       TaskAssignment[] @relation("TaskAssignmentAssignedBy")
 
   @@map("users")
 }
@@ -118,18 +118,18 @@ model Task {
   updatedAt          DateTime     @updatedAt @map("updated_at")
   completedAt        DateTime?    @map("completed_at")
 
-  creator User    @relation(fields: [createdBy], references: [id])
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  creator     User             @relation(fields: [createdBy], references: [id])
+  project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   assignments TaskAssignment[]
 
   @@map("tasks")
 }
 
 model UnassignmentReason {
-  id                BigInt   @id @default(autoincrement())
-  code              String   @unique @db.VarChar(100)
-  label             String   @db.VarChar(255)
-  affectsPerformance Boolean  @map("affects_performance")
+  id                 BigInt  @id @default(autoincrement())
+  code               String  @unique @db.VarChar(100)
+  label              String  @db.VarChar(255)
+  affectsPerformance Boolean @map("affects_performance")
 
   assignments TaskAssignment[]
 
@@ -154,4 +154,3 @@ model TaskAssignment {
 
   @@map("task_assignments")
 }
-
