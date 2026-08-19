@@ -5,6 +5,7 @@ export interface ITaskRepository {
   findById(id: bigint): Promise<Task | null>;
   create(data: any): Promise<Task>;
   updateTask(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task>;
+  updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task>;
 }
 
 export class TaskRepository implements ITaskRepository {
@@ -30,12 +31,10 @@ export class TaskRepository implements ITaskRepository {
       data
     });
   }
-  async updateTaskStatus(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task> {
-    return prisma.task.update({
-      where: {
-        id: taskId,
-      },
-      data
-    });
-  }
+ async updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task> {
+  return prisma.task.update({
+    where: { id: taskId },
+    data: { status: newStatus as any }
+  });
+}
 }

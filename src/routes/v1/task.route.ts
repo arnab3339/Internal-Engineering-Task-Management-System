@@ -4,7 +4,7 @@ import { TaskService } from "../../services/task.service.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
 import { validateRequestParams,validateRequestBody } from "../../middlewares/validate.middleware.js";
-import { createTaskSchema, taskIdSchema,updateTaskSchema } from "../../dtos/task.dto.js";
+import { createTaskSchema, taskIdSchema,updateTaskSchema , updateTaskStatusSchema} from "../../dtos/task.dto.js";
 import { RoleName } from "../../types/role.type.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { TaskAssignmentController } from "../../controllers/taskAssignment.controller.js";
@@ -33,6 +33,19 @@ taskRouter.post(
 );
 
 taskRouter.patch(
+  "/:taskId/status",
+  authenticateUser,
+  authorizeUser(RoleName.DEVELOPER),
+  validateRequestParams(taskIdSchema),
+  validateRequestBody(updateTaskStatusSchema),
+  taskController.updateTaskStatusHandler.bind(taskController)
+);
+// console.log("STATUS ROUTE REGISTERED: PATCH /tasks/:taskId/status");
+// console.log(taskRouter.stack.map((r: any) => ({
+//   path: r.route?.path,
+//   methods: r.route?.methods
+// }))); used for checking if route is working or not.. its getting printed in the terminal
+taskRouter.patch(
   "/:taskId",
   authenticateUser,
   authorizeUser(RoleName.ADMIN),
@@ -41,6 +54,9 @@ taskRouter.patch(
   taskController.updateTaskHandler.bind(taskController)
 );
 
+
+
 // implemnet all the routes related to task assignment below that
+
 
 export default taskRouter;

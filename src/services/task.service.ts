@@ -10,7 +10,8 @@ import { ITaskAssignmentRepository } from "../repositories/taskAssignment.reposi
 export interface ITaskService {
   getTaskById(taskId: bigint): Promise<Task>;
   createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task>;
-  updateTaskStatus(taskId: bigint, userId: bigint): Promise<Task>;
+ updateTask(taskId: bigint, data: UpdateTaskDto): Promise<Task>;
+  updateTaskStatus(taskId: bigint, userId: bigint, status: string): Promise<Task>;
 }
 
 export class TaskService implements ITaskService {
@@ -83,39 +84,38 @@ export class TaskService implements ITaskService {
     return updatedTask;
   }
 
- async updateTaskStatus(taskId: bigint, userId: bigint): Promise<Task> {
-  const existingTask = await this.taskRepository.findById(taskId);
+ async updateTaskStatus(taskId: bigint, userId: bigint, status: string): Promise<Task> { // <-- status যোগ করা হলো
+    const existingTask = await this.taskRepository.findById(taskId);
 
-  if (!existingTask) {
-    logger.error(`Task status update failed. Task not found with ID: ${taskId}`);
-    throw new NotfoundError("Task not found");
-  }
-
-  const currentAssignment = await this.taskAssignmentRepository.findCurrentAssignment(
-    taskId,
-    userId
-  );
-
-  if (!currentAssignment) {
-    logger.error(`Task status update failed. User is not the current assignee for task ID: ${taskId}`);
-    throw new ForbiddenError("You are not the current assignee of this task");
-  }
-
-  if (
-    existingTask.status !== "TODO" &&
-    existingTask.status !== "CHANGES_REQUESTED"
-  ) {
-    logger.error(`Task status update failed. Invalid status transition for task ID: ${taskId}`);
-    throw new BadRequestError("Task cannot be moved to IN_PROGRESS from its current status");
-  }
-
-  const updatedTask = await this.taskRepository.updateTask(
-    taskId,
-    {
-      status: "IN_PROGRESS",
+    if (!existingTask) {
+      logger.error(`Task status update failed. Task not found with ID: ${taskId}`);
+      throw new NotfoundError("Task not found");
     }
-  );
 
-  return updatedTask;
+    const currentAssignment = await this.taskAssignmentRepository.findCurrentAssignment(
+      taskId,
+      userId
+    );
+
+    if (!currentAssignment) {
+      logger.error(`Task status update failed. User is not the current assignee for task ID: ${taskId}`);
+      throw new ForbiddenError("You are not the current assignee of this task");
+    }
+
+    const currentStatus = existingTask.status as string;
+
+    if (
+      currentStatus !== "TODO" &&
+      currentStatus !== "CHANGES_REQUESTED" &&
+      currentStatus !== "REOPENED" 
+    ) {
+      logger.error(`Task status update failed. Invalid status transition for task ID: ${taskId}`);
+      throw new BadRequestError("Task cannot be moved to IN_PROGRESS from its current status");
+    }
+
+    
+    const updatedTask = await this.taskRepository.updateTaskStatus(taskId, status);
+
+    return updatedTask;
   }
 }
