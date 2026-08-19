@@ -86,5 +86,5 @@ export class ProjectService implements IProjectService {
     return await this.projectRepository.updateProject(projectId, {
     status: data.status,
   });
-}
+  }
 }
