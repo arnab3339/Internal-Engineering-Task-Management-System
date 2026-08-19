@@ -5,6 +5,7 @@ export interface IProjectMemberRepository {
     create(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember>;
     findActiveMembership(projectId: bigint, userId: bigint): Promise<boolean>;
     findByProjectId(projectId: bigint): Promise<ProjectMemberWithUser[]>;
+    removeMember(projectId: bigint, userId: bigint): Promise<boolean>;
 }
 
 export type ProjectMemberWithUser = Prisma.ProjectMemberGetPayload<{
@@ -52,5 +53,20 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
         orderBy: { joinedAt: "desc" }
     });
 }
+
+   async removeMember(projectId: bigint, userId: bigint): Promise<boolean> {
+    const result = await prisma.projectMember.updateMany({
+        where: {
+            projectId,
+            userId,
+            removedAt: null
+        },
+        data: {
+            removedAt: new Date()
+        }
+    });
+
+    return result.count > 0;
+} 
 
 }

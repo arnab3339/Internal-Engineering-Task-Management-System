@@ -48,5 +48,19 @@ export class ProjectMemberController {
     } catch (error) {
         next(error);
     }
-}
+    }
+    
+    async removeProjectMemberHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const projectId = BigInt(req.params.projectId as string);
+            const userId = BigInt(req.params.userId as string);
+
+            await this.projectMemberService.removeProjectMember(projectId, userId);
+
+            sendSuccess(res, null, StatusCodes.OK, "Developer removed from project successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }

@@ -8,6 +8,7 @@ import { BadRequestError, ConflictError, NotfoundError , UnauthorizedError} from
 export interface IProjectMemberService {
     addProjectMember(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember>;
     listProjectMembers(projectId: bigint, userId: bigint, role: RoleName): Promise<ProjectMemberWithUser[]>;
+    removeProjectMember(projectId: bigint, userId: bigint): Promise<void>;
 }
 
 export class ProjectMemberService implements IProjectMemberService {
@@ -71,6 +72,15 @@ export class ProjectMemberService implements IProjectMemberService {
         }
 
         return await this.projectMemberRepository.findByProjectId(projectId);
-}
+    }
+
+    
+    async removeProjectMember(projectId: bigint, userId: bigint): Promise<void> {
+        const removed: boolean = await this.projectMemberRepository.removeMember(projectId, userId);
+
+        if (!removed) {
+        throw new NotfoundError(`No active membership found for user ${userId} in project ${projectId}`);
+        }
+    }
 
 }

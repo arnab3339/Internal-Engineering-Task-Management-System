@@ -7,10 +7,10 @@ import { ProjectController } from "../../controllers/project.controller.js";
 import { ProjectService } from "../../services/project.service.js";
 import { ProjectRepository } from "../../repositories/project.repository.js";
 import { UserRepository } from "../../repositories/user.repository.js";
-import { validateRequestBody, validateRequestParams } from "../../middlewares/validate.middleware.js";
+import { validateRequestBody, validateRequestParams  } from "../../middlewares/validate.middleware.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
-import { projectIdParamSchema, addProjectMemberSchema} from "../../dtos/projectMember.dto.js";
+import { projectIdParamSchema, addProjectMemberSchema , projectMemberParamsSchema} from "../../dtos/projectMember.dto.js";
 import { RoleName } from "../../types/role.type.js";
 import { updateProjectSchema } from "../../dtos/project.dto.js";
 
@@ -73,6 +73,14 @@ projectRouter.get(
     authenticateUser,
     validateRequestParams(projectIdParamSchema),
     projectMemberController.getProjectMembersHandler.bind(projectMemberController)
+);
+
+projectRouter.delete(
+    "/:projectId/members/:userId",
+    authenticateUser,
+    authorizeUser(RoleName.ADMIN),
+    validateRequestParams(projectMemberParamsSchema),
+    projectMemberController.removeProjectMemberHandler.bind(projectMemberController)
 );
 
 export default projectRouter;
