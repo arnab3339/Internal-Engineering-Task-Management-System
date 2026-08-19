@@ -12,7 +12,7 @@ import { authenticateUser } from "../../middlewares/authentication.middleware.js
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { projectIdParamSchema, addProjectMemberSchema , projectMemberParamsSchema} from "../../dtos/projectMember.dto.js";
 import { RoleName } from "../../types/role.type.js";
-import { updateProjectSchema } from "../../dtos/project.dto.js";
+import { updateProjectSchema ,updateProjectStatusSchema} from "../../dtos/project.dto.js";
 
 const projectMemberController = new ProjectMemberController(
     new ProjectMemberService(
@@ -66,6 +66,13 @@ projectRouter.post(
     validateRequestParams(projectIdParamSchema),
     validateRequestBody(addProjectMemberSchema),
     projectMemberController.addProjectMemberHandler.bind(projectMemberController)
+);
+projectRouter.patch(
+  "/:id/status",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestBody(updateProjectStatusSchema),
+  projectController.updateProjectStatusHandler.bind(projectController)
 );
 
 projectRouter.get(

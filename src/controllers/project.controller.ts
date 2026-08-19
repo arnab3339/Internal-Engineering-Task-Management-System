@@ -67,4 +67,18 @@ export class ProjectController {
       next(error);
     }
   }
+  async updateProjectStatusHandler(req: Request, res: Response, next: NextFunction) {
+    try {
+      const projectId = BigInt(req.params.id as string);
+
+      const project = await this.projectService.updateProjectStatus(
+        projectId,
+        req.body
+      );
+
+      sendSuccess(res, project, 200, "Project status updated successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
 }

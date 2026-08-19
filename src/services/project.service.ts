@@ -1,4 +1,4 @@
-import { CreateProjectDto,UpdateProjectDto } from "../dtos/project.dto.js";
+import { CreateProjectDto,UpdateProjectDto,UpdateProjectStatusDto } from "../dtos/project.dto.js";
 import { IProjectRepository } from "../repositories/project.repository.js";
 import { Prisma, Project } from "../../generated/prisma/client.js";
 import { RoleName } from "../types/role.type.js";
@@ -10,6 +10,7 @@ export interface IProjectService {
   getAllProjects(): Promise<Project[]>;
   updateProject(projectId: bigint, data: UpdateProjectDto): Promise<Project>;
   getProjectById(projectId: bigint, userId: bigint, role: RoleName): Promise<Project>;
+  updateProjectStatus(projectId: bigint, data: UpdateProjectStatusDto): Promise<Project>;
 }
 
 export class ProjectService implements IProjectService {
@@ -75,5 +76,16 @@ export class ProjectService implements IProjectService {
       projectId,
       updateData
     );
+  }
+  async updateProjectStatus(projectId: bigint, data: UpdateProjectStatusDto): Promise<Project> {
+    const project = await this.projectRepository.getProjectById(projectId);
+
+    if (!project) {
+      throw new NotfoundError("Project not found");
+    }
+    
+    return await this.projectRepository.updateProject(projectId, {
+      status: data.status,
+    });
   }
 }
