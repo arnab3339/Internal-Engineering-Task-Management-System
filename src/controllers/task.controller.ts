@@ -52,14 +52,9 @@ export class TaskController {
   try {
     const { user } = req as AuthenticatedRequest;
 
-    const projectId = req.query.projectId
-      ? BigInt(req.query.projectId as string)
-      : undefined;
-
     const tasks = await this.taskService.getTasks(
       user.userId,
-      user.role,
-      projectId
+      user.role
     );
 
     sendSuccess(res, tasks, 200, "Tasks fetched successfully");

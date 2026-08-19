@@ -6,7 +6,7 @@ import { UpdateTaskDto } from "../dtos/task.dto.js";
 import { logger } from "../configs/logger.config.js";
 export interface ITaskService {
   getTaskById(taskId: bigint): Promise<Task>;
-  getTasks(userId: bigint, role: string, projectId?: bigint): Promise<Task[]>;
+  getTasks(userId: bigint, role: string): Promise<Task[]>;
   createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task>;
 }
 
@@ -26,25 +26,19 @@ export class TaskService implements ITaskService {
 
     return task;
   }
-  async getTasks (userId: bigint, role: string, projectId?: bigint): Promise<Task[]> {
-  const where: Prisma.TaskWhereInput = {};
-
-  if (projectId !== undefined) {
-    where.projectId = projectId;
+  async getTasks(userId: bigint, role: string): Promise<Task[]> {
+  if (role === "ADMIN") {
+    return this.taskRepository.findAll();
   }
 
-  if (role === "ADMIN") {
-    where.createdBy = userId;
-  } else {
-    where.assignments = {
+  return this.taskRepository.findAll({
+    assignments: {
       some: {
         developerId: userId,
         isCurrent: true,
       },
-    };
-  }
-
-  return this.taskRepository.findAll(where);
+    },
+  });
 }
 
   async createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task> {
