@@ -64,7 +64,7 @@ model User {
   addedProjectMembers ProjectMember[]  @relation("ProjectMemberAddedBy")
   taskAssignments     TaskAssignment[] @relation("TaskAssignmentDeveloper")
   assignedTasks       TaskAssignment[] @relation("TaskAssignmentAssignedBy")
-  submissions Submission[] @relation("SubmissionSubmitter")
+  submissions Submission[]
 
   @@map("users")
 }
@@ -169,7 +169,7 @@ model Submission {
   submittedAt      DateTime @default(now()) @map("submitted_at")
 
   task       Task           @relation(fields: [taskId], references: [id])
-  submitter  User           @relation("SubmissionSubmitter", fields: [submittedBy], references: [id])
+  submittedByUser User      @relation(fields: [submittedBy], references: [id])
   assignment TaskAssignment @relation(fields: [assignmentId], references: [id])
 
   @@unique([taskId, submissionNumber])
