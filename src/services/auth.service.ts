@@ -9,7 +9,7 @@ export interface IAuthService {
   signIn(data: SignInDto): Promise<string>;
   getCurrentUserDetils(user: AuthUser): Promise<SafeUserWithRole>;
   updatePassword(user: AuthUser, data: UpdatePasswordDto): Promise<void>;
-  logout(): Promise<void>;
+  
 }
 
 export class AuthService implements IAuthService {
@@ -77,5 +77,5 @@ export class AuthService implements IAuthService {
         passwordHash
       );
     }
-     async logout(): Promise<void> {}
+
 }
