@@ -33,7 +33,7 @@ export class SubmissionService implements ISubmissionService {
             },
             submissionNumber,
             prUrl: data.prUrl,
-            notes: data.notes,
+            notes: data.notes??null,
         });
     }
 }
