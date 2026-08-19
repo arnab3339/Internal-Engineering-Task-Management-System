@@ -7,6 +7,28 @@ datasource db {
   provider = "mysql"
 }
 
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  CHANGES_REQUESTED
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
 model Role {
   id          BigInt  @id @default(autoincrement())
   name        String  @unique @db.VarChar(50)
@@ -54,10 +76,11 @@ model ProjectMember {
   joinedAt  DateTime  @default(now()) @map("joined_at")
   removedAt DateTime? @map("removed_at")
 
-  project     Project @relation(fields: [projectId], references: [id])
-  user        User    @relation("ProjectMemberUser", fields: [userId], references: [id])
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user        User    @relation("ProjectMemberUser", fields: [userId], references: [id], onDelete: Cascade)
   addedByUser User    @relation("ProjectMemberAddedBy", fields: [addedBy], references: [id])
 
+  @@index([projectId, userId, removedAt])
   @@map("project_members")
 }
 
@@ -74,30 +97,27 @@ model Project {
 
   creator User            @relation(fields: [createdBy], references: [id])
   members ProjectMember[]
+  tasks   Task[]
 
   @@map("projects")
 }
 
-enum ProjectStatus {
-  PLANNING
-  ACTIVE
-  COMPLETED
-  ARCHIVED
-}
-
 model Task {
-  id          BigInt    @id @default(autoincrement())
-  projectId   BigInt    @map("project_id")
-  title       String    @db.VarChar(255)
-  description String?   @db.Text
-  status      String    @db.VarChar(50)
-  priority    String    @db.VarChar(50)
-  ownerId     BigInt?   @map("owner_id")
-  deadline    DateTime? @map("deadline")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
+  id                 BigInt       @id @default(autoincrement())
+  projectId          BigInt       @map("project_id")
+  title              String       @db.VarChar(255)
+  description        String?      @db.Text
+  acceptanceCriteria String?      @map("acceptance_criteria") @db.Text
+  status             TaskStatus   @default(TODO)
+  priority           TaskPriority @default(MEDIUM)
+  createdBy          BigInt       @map("created_by")
+  deadline           DateTime?
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime     @updatedAt @map("updated_at")
+  completedAt        DateTime?    @map("completed_at")
 
-  owner User? @relation(fields: [ownerId], references: [id])
+  creator User    @relation(fields: [createdBy], references: [id])
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("tasks")
 }

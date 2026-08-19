@@ -8,9 +8,9 @@ export interface AccessTokenClaims extends JwtPayload {
 }
 
 export function signToken(payload: AccessTokenClaims): string {
-    return jwt.sign(payload, JWT_SECRET as Secret, {
+    return jwt.sign(payload, JWT_SECRET, {
         expiresIn: JWT_EXPIRES_IN
-    } as jwt.SignOptions);
+    });
 }
 
 export function verifyToken(token: string): AccessTokenClaims {

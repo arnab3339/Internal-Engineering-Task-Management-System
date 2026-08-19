@@ -3,7 +3,6 @@ import { StatusCodes } from "http-status-codes";
 import { IProjectMemberService } from "../services/projectMember.service.js";
 import { AddProjectMemberDto } from "../dtos/projectMember.dto.js";
 import { sendSuccess } from "../utils/helpers/response.helper.js";
-import { parseId } from "../utils/helpers/id.helper.js";
 import { AuthenticatedRequest } from "../types/express.js";
 import { RoleName } from "../types/role.type.js";
 
@@ -18,7 +17,7 @@ export class ProjectMemberController {
         try {
             const { user } = req as AuthenticatedRequest;
 
-            const projectId = parseId(req.params.projectId as string);
+            const projectId = BigInt(req.params.projectId as string);
             const data = req.body as AddProjectMemberDto;
 
             const member = await this.projectMemberService.addProjectMember(

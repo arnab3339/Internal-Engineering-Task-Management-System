@@ -1,27 +1,16 @@
-import { Project } from "../../generated/prisma/client.js";
+import { Prisma, Project } from "../../generated/prisma/client.js";
 import { prisma } from "../configs/db.config.js";
 import { CreateProjectDto } from "../dtos/project.dto.js";
-import { Prisma } from "../../generated/prisma/client.js";
 export interface IProjectRepository {
-  create(
-    data: CreateProjectDto,
-    createdBy: bigint
-  ): Promise<Project>;
+  create(data: CreateProjectDto, createdBy: bigint): Promise<Project>;
   getAllProjects(): Promise<Project[]>;
-  getProjectById(
-  projectId: bigint
-): Promise<Prisma.ProjectGetPayload<{
-  include: {
-    members: true;
-  };
-}> | null>;
+  updateProject(projectId: bigint, data: Prisma.ProjectUpdateInput): Promise<Project>;
+  getProjectById(projectId: bigint): Promise<Project | null>;
+  isProjectExist(projectId: bigint): Promise<boolean>;
 }
 
 export class ProjectRepository implements IProjectRepository {
-  async create(
-    data: CreateProjectDto,
-    createdBy: bigint
-  ): Promise<Project> {
+  async create(data: CreateProjectDto, createdBy: bigint): Promise<Project> {
     return prisma.project.create({
       data: {
         name: data.name,
@@ -40,28 +29,39 @@ export class ProjectRepository implements IProjectRepository {
       },
     });
   }
+
   async getAllProjects(): Promise<Project[]> {
-  return prisma.project.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
-}
-async getProjectById(
-  projectId: bigint
-): Promise<Prisma.ProjectGetPayload<{
-  include: {
-    members: true;
-  };
-}> | null> {
-  return prisma.project.findUnique({
-    where: {
-      id: projectId,
-    },
-    include: {
-      members: true,
-    },
-  });
-}
+    return prisma.project.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+  }
+
+  async getProjectById(projectId: bigint): Promise<Project | null> {
+    return prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+  }
+
+  async isProjectExist(projectId: bigint): Promise<boolean> {
+    const project = await prisma.project.findFirst({
+      where: { id: projectId },
+      select: { id: true }
+    });
+
+    return project !== null;
+  }
+
+  async updateProject(projectId: bigint, data: Prisma.ProjectUpdateInput): Promise<Project> {
+    return prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data
+    });
+  }
 
 }
