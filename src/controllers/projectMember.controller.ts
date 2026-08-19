@@ -33,21 +33,21 @@ export class ProjectMemberController {
     }
 
     async getProjectMembersHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-        const { user } = req as AuthenticatedRequest;
+        try {
+            const { user } = req as AuthenticatedRequest;
 
-        const projectId = BigInt(req.params.projectId as string);
+            const projectId = BigInt(req.params.projectId as string);
 
-        const members = await this.projectMemberService.listProjectMembers(
-            projectId,
-            user.userId,
-            user.role as RoleName
-        );
+            const members = await this.projectMemberService.listProjectMembers(
+                projectId,
+                user.userId,
+                user.role as RoleName
+            );
 
-        sendSuccess(res, members, StatusCodes.OK, "Project members fetched successfully");
-    } catch (error) {
-        next(error);
-    }
+            sendSuccess(res, members, StatusCodes.OK, "Project members fetched successfully");
+        } catch (error) {
+            next(error);
+        }
     }
     
     async removeProjectMemberHandler(req: Request, res: Response, next: NextFunction): Promise<void> {

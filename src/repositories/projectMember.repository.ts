@@ -43,30 +43,38 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     }
 
     async findByProjectId(projectId: bigint): Promise<ProjectMemberWithUser[]> {
-    return await prisma.projectMember.findMany({
-        where: { projectId },
-        include: {
-            user: {
-                omit: { passwordHash: true }
-            }
-        },
-        orderBy: { joinedAt: "desc" }
-    });
-}
+        return await prisma.projectMember.findMany({
+            where: { projectId },
+            include: {
+                user: {
+                    omit: { passwordHash: true }
+                }
+            },
+            orderBy: { joinedAt: "desc" }
+        });
+    }
 
    async removeMember(projectId: bigint, userId: bigint): Promise<boolean> {
-    const result = await prisma.projectMember.updateMany({
-        where: {
-            projectId,
-            userId,
-            removedAt: null
-        },
-        data: {
-            removedAt: new Date()
-        }
-    });
+        const membership = await prisma.projectMember.findFirst({
+            where: {
+                projectId,
+                userId,
+                removedAt: null
+            },
+            select : { id : true }
+        });
 
-    return result.count > 0;
-} 
+        if ( !membership ) {
+            return false ;
+        }
+
+        await prisma.projectMember.update({
+            where: { id: membership.id },
+            data: { removedAt: new Date() }
+        });
+
+        return true;
+    
+    } 
 
 }
