@@ -48,22 +48,23 @@ export class TaskController {
     }
   }
 
-  async getTasksHandler(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+  async getTasksHandler(req: Request, res: Response, next: NextFunction) {
   try {
     const { user } = req as AuthenticatedRequest;
 
+    const projectId = req.query.projectId
+      ? BigInt(req.query.projectId as string)
+      : undefined;
+
     const tasks = await this.taskService.getTasks(
       user.userId,
-      user.role
+      user.role,
+      projectId
     );
 
     sendSuccess(res, tasks, 200, "Tasks fetched successfully");
-    } catch (error) {
+  } catch (error) {
     next(error);
-    }
   }
+}
 }
