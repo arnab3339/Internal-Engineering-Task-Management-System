@@ -42,7 +42,7 @@ export class ProjectService implements IProjectService {
 
     const isProjectMember: boolean = await this.projectMemberRepository.findActiveMembership(projectId, userId);
 
-        if(!isProjectMember) {
+    if(!isProjectMember) {
       throw new UnauthorizedError("You are not authorized to view this project");
     }
 

@@ -20,7 +20,7 @@ export class ProjectMemberRepository implements IProjectMemberRepository {
     }
 
     async findActiveMembership(projectId: bigint, userId: bigint): Promise<boolean> {
-        const membership = prisma.projectMember.findFirst({
+        const membership = await prisma.projectMember.findFirst({
             where: {
                 projectId,
                 userId,
