@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-
+import { sendSuccess } from "../utils/helpers/response.helper.js";
 import { ISubmissionService } from "../services/submission.service.js";
-
+import { AuthenticatedRequest } from "../types/express.js";
 export class SubmissionController {
     private readonly submissionService: ISubmissionService; 
 
@@ -10,6 +10,20 @@ export class SubmissionController {
     }
 
     async createSubmissionHandler(req: Request, res: Response, next: NextFunction) {
-        // implement properly
+        try {
+            const { user } = req as AuthenticatedRequest;
+            const taskId = req.params.taskId as string;
+            const submissionData = req.body;
+
+            const submission = await this.submissionService.createSubmission(
+                BigInt(taskId),
+                user.userId,
+                submissionData
+            );
+
+            sendSuccess(res, submission, 201, "Submission created successfully");
+        } catch (error) {
+            next(error);
+        }
     }
 }
