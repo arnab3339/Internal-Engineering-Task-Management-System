@@ -11,7 +11,7 @@ import { TaskAssignmentController } from "../../controllers/taskAssignment.contr
 import { TaskAssignmentService } from "../../services/taskAssignment.service.js";
 import { TaskAssignmentRepository } from "../../repositories/taskAssignment.repository.js";
 
-const taskController = new TaskController(new TaskService(new TaskRepository()));
+const taskController = new TaskController(new TaskService(new TaskRepository(), new TaskAssignmentRepository()));
 
 const taskAssignmentController = new TaskAssignmentController(new TaskAssignmentService(new TaskAssignmentRepository()));
 

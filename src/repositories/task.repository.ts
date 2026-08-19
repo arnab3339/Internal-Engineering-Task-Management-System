@@ -30,4 +30,12 @@ export class TaskRepository implements ITaskRepository {
       data
     });
   }
+  async updateTaskStatus(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task> {
+    return prisma.task.update({
+      where: {
+        id: taskId,
+      },
+      data
+    });
+  }
 }
