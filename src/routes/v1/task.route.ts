@@ -7,8 +7,13 @@ import { validateRequestParams,validateRequestBody } from "../../middlewares/val
 import { createTaskSchema, taskIdSchema,updateTaskSchema } from "../../dtos/task.dto.js";
 import { RoleName } from "../../types/role.type.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
+import { TaskAssignmentController } from "../../controllers/taskAssignment.controller.js";
+import { TaskAssignmentService } from "../../services/taskAssignment.service.js";
+import { TaskAssignmentRepository } from "../../repositories/taskAssignment.repository.js";
 
 const taskController = new TaskController(new TaskService(new TaskRepository()));
+
+const taskAssignmentController = new TaskAssignmentController(new TaskAssignmentService(new TaskAssignmentRepository()));
 
 const taskRouter = Router();
 taskRouter.get(
@@ -40,5 +45,7 @@ taskRouter.patch(
   validateRequestBody(updateTaskSchema),
   taskController.updateTaskHandler.bind(taskController)
 );
+
+// implemnet all the routes related to task assignment below that
 
 export default taskRouter;
