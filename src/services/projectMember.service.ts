@@ -28,7 +28,7 @@ export class ProjectMemberService implements IProjectMemberService {
     }
 
     async addProjectMember(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember> {
-        const [project] = await Promise.all([
+        const [project , targetUser] = await Promise.all([
             this.projectRepository.getProjectById(projectId),
             this.userRepository.isUserExist(userId)
         ]);
@@ -36,7 +36,6 @@ export class ProjectMemberService implements IProjectMemberService {
             throw new NotfoundError(`No project exist with this given id: ${projectId}`);
         }
 
-        const targetUser: boolean = await this.userRepository.isUserExist(userId);
 
         if(!targetUser) {
             throw new NotfoundError(`No existing member found with this given id: ${userId}`);
