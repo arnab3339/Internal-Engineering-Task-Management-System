@@ -27,10 +27,10 @@ export class ProjectMemberService implements IProjectMemberService {
     }
 
     async addProjectMember(projectId: bigint, userId: bigint, addedBy: bigint): Promise<ProjectMember> {
-        const [project, targetUserExists] = await Promise.all([
-        this.projectRepository.getProjectById(projectId),
-        this.userRepository.isUserExist(userId)
-    ]);
+        const [project] = await Promise.all([
+            this.projectRepository.getProjectById(projectId),
+            this.userRepository.isUserExist(userId)
+        ]);
         if(!project) {
             throw new NotfoundError(`No project exist with this given id: ${projectId}`);
         }
@@ -52,14 +52,15 @@ export class ProjectMemberService implements IProjectMemberService {
 
 
     async listProjectMembers(projectId: bigint, userId: bigint, role: RoleName): Promise<ProjectMemberWithUser[]> {
-        const membershipCheck = role !== RoleName.ADMIN
-        ? this.projectMemberRepository.findActiveMembership(projectId, userId)
-        : Promise.resolve(true);
+        const membershipCheck = role == RoleName.ADMIN
+            ? true
+            : this.projectMemberRepository.findActiveMembership(projectId, userId)
+        
 
         const [project, isAuthorized] = await Promise.all([
-        this.projectRepository.getProjectById(projectId),
-        membershipCheck
-    ]);
+            this.projectRepository.getProjectById(projectId),
+            membershipCheck
+        ]);
 
         if (!project) {
             throw new NotfoundError(`No project exist with this given id: ${projectId}`);
