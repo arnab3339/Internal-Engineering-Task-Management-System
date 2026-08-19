@@ -83,6 +83,7 @@ export class ProjectService implements IProjectService {
     if (!project) {
       throw new NotfoundError("Project not found");
     }
+    
     return await this.projectRepository.updateProject(projectId, {
       status: data.status,
     });
