@@ -64,6 +64,7 @@ model User {
   addedProjectMembers ProjectMember[]  @relation("ProjectMemberAddedBy")
   taskAssignments     TaskAssignment[] @relation("TaskAssignmentDeveloper")
   assignedTasks       TaskAssignment[] @relation("TaskAssignmentAssignedBy")
+  submissions Submission[]
 
   @@map("users")
 }
@@ -121,6 +122,7 @@ model Task {
   creator     User             @relation(fields: [createdBy], references: [id])
   project     Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   assignments TaskAssignment[]
+  submissions Submission[]
 
   @@map("tasks")
 }
@@ -151,6 +153,25 @@ model TaskAssignment {
   developer          User                @relation("TaskAssignmentDeveloper", fields: [developerId], references: [id])
   assignedByUser     User                @relation("TaskAssignmentAssignedBy", fields: [assignedBy], references: [id])
   unassignmentReason UnassignmentReason? @relation(fields: [unassignmentReasonId], references: [id])
+  submissions Submission[]
 
   @@map("task_assignments")
+}
+
+model Submission {
+  id               BigInt   @id @default(autoincrement())
+  taskId           BigInt   @map("task_id")
+  submittedBy      BigInt   @map("submitted_by")
+  assignmentId     BigInt   @map("assignment_id")
+  submissionNumber Int      @map("submission_number")
+  prUrl            String   @map("pr_url") @db.VarChar(500)
+  notes            String?  @db.Text
+  submittedAt      DateTime @default(now()) @map("submitted_at")
+
+  task       Task           @relation(fields: [taskId], references: [id])
+  submittedByUser User      @relation(fields: [submittedBy], references: [id])
+  assignment TaskAssignment @relation(fields: [assignmentId], references: [id])
+
+  @@unique([taskId, submissionNumber])
+  @@map("submissions")
 }
