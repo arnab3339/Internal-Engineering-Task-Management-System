@@ -26,18 +26,19 @@ export class TaskService implements ITaskService {
 
     return task;
   }
-  async getTasks(userId: bigint,role: string,projectId?: bigint): Promise<Task[]> {
-  const where: Prisma.TaskWhereInput = {};
-
-  if (projectId !== undefined) {
-    where.projectId = projectId;
-  }
-
+  async getTasks(userId: bigint, role: string, projectId: bigint): Promise<Task[]> {
   if (role === "ADMIN") {
-    return this.taskRepository.findAll(where);
+    return this.taskRepository.findAllForAdmin(projectId);
   }
 
-  return this.taskRepository.findByDeveloper(userId, projectId);
+  if (role === "DEVELOPER") {
+    return this.taskRepository.findAllForDeveloper(
+      userId,
+      projectId
+    );
+  }
+
+  return [];
 }
 
   async createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task> {

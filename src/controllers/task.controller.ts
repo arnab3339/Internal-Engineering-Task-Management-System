@@ -52,9 +52,7 @@ export class TaskController {
   try {
     const { user } = req as AuthenticatedRequest;
 
-    const projectId = req.query.projectId
-      ? BigInt(req.query.projectId as string)
-      : undefined;
+    const projectId = BigInt(req.query.projectId as string);
 
     const tasks = await this.taskService.getTasks(
       user.userId,

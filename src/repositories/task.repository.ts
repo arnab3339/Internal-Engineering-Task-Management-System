@@ -3,8 +3,8 @@ import { Prisma, Task } from "../../generated/prisma/client.js";
 
 export interface ITaskRepository {
   findById(id: bigint): Promise<Task | null>;
-  findAll(where?: Prisma.TaskWhereInput): Promise<Task[]>;
-  findByDeveloper(developerId: bigint, projectId?: bigint): Promise<Task[]>;
+  findAllForAdmin(projectId: bigint): Promise<Task[]>;
+  findAllForDeveloper(developerId: bigint, projectId: bigint): Promise<Task[]>;
   create(data: any): Promise<Task>;
   updateTask(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task>;
 }
@@ -17,30 +17,27 @@ export class TaskRepository implements ITaskRepository {
       },
     });
   }
-  async findAll(where?: Prisma.TaskWhereInput): Promise<Task[]> {
-  if (where) {
-    return prisma.task.findMany({
-      where,
-    });
-  }
-
-  return prisma.task.findMany();
+  async findAllForAdmin(projectId: bigint): Promise<Task[]> {
+  return prisma.task.findMany({
+    where: {
+      projectId,
+    },
+  });
 }
-
   
-async findByDeveloper(developerId: bigint, projectId?: bigint): Promise<Task[]> {
-   return prisma.task.findMany({
-     where: {
-       ...(projectId !== undefined ? { projectId } : {}),
-       assignments: {
+async findAllForDeveloper(developerId: bigint, projectId: bigint): Promise<Task[]> {
+  return prisma.task.findMany({
+    where: {
+      projectId,
+      assignments: {
         some: {
-           developerId,
-           isCurrent: true,
-         },
-       },
-     },
-   });
- }
+          developerId,
+          isCurrent: true,
+        },
+      },
+    },
+  });
+}
   
 
   async create(data: Prisma.TaskCreateInput): Promise<Task> {
