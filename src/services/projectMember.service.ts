@@ -81,14 +81,14 @@ export class ProjectMemberService implements IProjectMemberService {
         this.projectMemberRepository.findActiveMembership(projectId, userId)
     ]);
 
-        if(! project){
+        if(!project){
             throw new NotfoundError(`No project exist with this given id: ${projectId}`);
         }
 
         if (!membership) {
             throw new NotfoundError(`No active membership found for user ${userId} in project ${projectId}`);
         }
-        await this.projectMemberRepository.update(membership.id, { removedAt: new Date() });
+        await this.projectMemberRepository.update(userId, { removedAt: new Date() });
     }
 }
 
