@@ -8,7 +8,6 @@ export class SubmissionController {
     constructor(submissionService: ISubmissionService) {
         this.submissionService = submissionService;
     }
-
     async createSubmissionHandler(req: Request, res: Response, next: NextFunction) {
         try {
             const { user } = req as AuthenticatedRequest;
@@ -22,6 +21,17 @@ export class SubmissionController {
             );
 
             sendSuccess(res, submission, 201, "Submission created successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getSubmissionByIdHandler(req: Request, res: Response, next: NextFunction) {
+        try {
+            const submissionId = req.params.submissionId as string;
+
+            const submission = await this.submissionService.findSubmissionById(BigInt(submissionId));
+
+            sendSuccess(res, submission, 200, "Submission fetched successfully");
         } catch (error) {
             next(error);
         }

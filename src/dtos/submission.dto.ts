@@ -7,3 +7,7 @@ export const createSubmissionSchema = z.object({
 });
 
 export type CreateSubmissionDto = z.infer<typeof createSubmissionSchema>;
+
+export const submissionIdSchema = z.object({
+  submissionId: z.coerce.bigint("Submission ID must be a valid number"),
+});

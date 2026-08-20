@@ -4,6 +4,7 @@ import { Submission } from "../../generated/prisma/client.js";
 
 export interface ISubmissionService {
     createSubmission(taskId: bigint, submittedBy: bigint, data: CreateSubmissionDto): Promise<Submission>; 
+    findSubmissionById(id: bigint): Promise<Submission | null>;
 }
 export class SubmissionService implements ISubmissionService {
     private readonly submissionRepository: ISubmissionRepository;
@@ -31,9 +32,12 @@ export class SubmissionService implements ISubmissionService {
                     id: data.assignmentId,
                 },
             },
-            submissionNumber,
+            submissionNumber, 
             prUrl: data.prUrl,
             notes: data.notes??null,
         });
+    }
+    async findSubmissionById(id: bigint): Promise<Submission | null> {
+        return this.submissionRepository.findById(id);
     }
 }
