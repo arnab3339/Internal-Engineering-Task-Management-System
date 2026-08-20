@@ -2,7 +2,6 @@ import { Router } from "express";
 import { SubmissionController } from "../../controllers/submission.controller.js";
 import { SubmissionService } from "../../services/submission.service.js";
 import { SubmissionRepository } from "../../repositories/submission.repository.js";
-import { TaskService } from "../../services/task.service.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
 
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
@@ -16,7 +15,7 @@ export const submissionRouter = Router({ mergeParams: true });
 export const submissionController = new SubmissionController(
     new SubmissionService(
         new SubmissionRepository(),
-        new TaskService(new TaskRepository())
+        new TaskRepository()
     )
 );
 
