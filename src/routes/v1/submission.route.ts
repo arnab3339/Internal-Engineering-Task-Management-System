@@ -8,10 +8,11 @@ import { submissionIdSchema } from "../../dtos/submission.dto.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { RoleName } from "../../types/role.type.js";
 import { createSubmissionSchema } from "../../dtos/submission.dto.js";
+import { TaskRepository } from "../../repositories/task.repository.js";
 
 export const submissionRouter = Router();
 
-const submissionController = new SubmissionController(new SubmissionService(new SubmissionRepository()));
+const submissionController = new SubmissionController(new SubmissionService(new SubmissionRepository(),new TaskRepository()));
 
 // implement all the routers below
 submissionRouter.post(

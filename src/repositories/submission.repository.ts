@@ -25,7 +25,7 @@ export class SubmissionRepository implements ISubmissionRepository {
           submissionNumber: true,
         },
       });
-      return submission?.submissionNumber ?? 0;
+      return submission?.submissionNumber ?? null;
     }
     async findById(id: bigint): Promise<Submission | null> {
       return prisma.submission.findUnique({
