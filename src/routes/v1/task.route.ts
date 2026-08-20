@@ -16,6 +16,7 @@ const taskController = new TaskController(new TaskService(new TaskRepository(), 
 const taskAssignmentController = new TaskAssignmentController(new TaskAssignmentService(new TaskAssignmentRepository()));
 
 const taskRouter = Router();
+
 taskRouter.get(
   "/",
   authenticateUser,
@@ -23,6 +24,7 @@ taskRouter.get(
   validateRequestQuery(getTasksQuerySchema),
   taskController.getTasksHandler.bind(taskController)
 );
+
 taskRouter.get(
   "/:taskId",
   authenticateUser,
