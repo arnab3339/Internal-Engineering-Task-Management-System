@@ -10,15 +10,11 @@ import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { TaskAssignmentController } from "../../controllers/taskAssignment.controller.js";
 import { TaskAssignmentService } from "../../services/taskAssignment.service.js";
 import { TaskAssignmentRepository } from "../../repositories/taskAssignment.repository.js";
-import { SubmissionController } from "../../controllers/submission.controller.js";
-import { SubmissionService } from "../../services/submission.service.js";
-import { SubmissionRepository } from "../../repositories/submission.repository.js";
-import { createSubmissionSchema } from "../../dtos/submission.dto.js";
+import { submissionRouter } from "./submission.route.js";
 
 const taskController = new TaskController(new TaskService(new TaskRepository()));
 
 const taskAssignmentController = new TaskAssignmentController(new TaskAssignmentService(new TaskAssignmentRepository()));
-const submissionController = new SubmissionController(new SubmissionService(new SubmissionRepository()));
 const taskRouter = Router();
 
 taskRouter.get(
@@ -45,13 +41,7 @@ taskRouter.patch(
   taskController.updateTaskHandler.bind(taskController)
 );
 
-taskRouter.post(
-    "/:taskId/submissions",
-    authenticateUser,
-    validateRequestParams(taskIdSchema),
-    validateRequestBody(createSubmissionSchema),
-    submissionController.createSubmissionHandler.bind(submissionController)
-);
+taskRouter.use("/:taskId/submissions",submissionRouter);
 
 // implemnet all the routes related to task assignment below that
 
