@@ -6,8 +6,11 @@ import { TaskAssignmentRepository } from "../../repositories/taskAssignment.repo
 import { TaskService } from "../../services/task.service.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
 
+import { authenticateUser } from "../../middlewares/authentication.middleware.js";
+import { validateRequestParams } from "../../middlewares/validate.middleware.js";
+import { taskIdSchema } from "../../dtos/task.dto.js";
 
-export const submissionRouter = Router();
+export const submissionRouter = Router({ mergeParams: true });
 
 export const submissionController = new SubmissionController(
     new SubmissionService(
@@ -17,7 +20,11 @@ export const submissionController = new SubmissionController(
     )
 );
 
-
-
+submissionRouter.get(
+    "/",
+    authenticateUser,
+    validateRequestParams(taskIdSchema),
+    submissionController.getTaskSubmissionsHandler.bind(submissionController)
+);
 
 // implement all the routers below
