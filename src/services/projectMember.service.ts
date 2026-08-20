@@ -76,10 +76,17 @@ export class ProjectMemberService implements IProjectMemberService {
 
     
     async removeProjectMember(projectId: bigint, userId: bigint): Promise<void> {
-        const membership = await this.projectMemberRepository.findActiveMembership(projectId, userId);
+        const [project, membership] = await Promise.all([
+        this.projectRepository.getProjectById(projectId),
+        this.projectMemberRepository.findActiveMembership(projectId, userId)
+    ]);
+
+        if(! project){
+            throw new NotfoundError(`No project exist with this given id: ${projectId}`);
+        }
 
         if (!membership) {
-        throw new NotfoundError(`No active membership found for user ${userId} in project ${projectId}`);
+            throw new NotfoundError(`No active membership found for user ${userId} in project ${projectId}`);
         }
         await this.projectMemberRepository.update(membership.id, { removedAt: new Date() });
     }
