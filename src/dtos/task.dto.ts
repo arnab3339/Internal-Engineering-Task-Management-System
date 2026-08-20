@@ -36,6 +36,7 @@ export const updateTaskStatusSchema = z.object({
   })
 });
 
+
 export type TaskIdDto = z.infer<typeof taskIdSchema>;
 export type CreateTaskDto = z.infer<typeof createTaskSchema>;
 export type UpdateTaskDto = z.infer<typeof updateTaskSchema>;

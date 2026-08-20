@@ -64,7 +64,7 @@ model User {
   addedProjectMembers ProjectMember[]  @relation("ProjectMemberAddedBy")
   taskAssignments     TaskAssignment[] @relation("TaskAssignmentDeveloper")
   assignedTasks       TaskAssignment[] @relation("TaskAssignmentAssignedBy")
-  submissions Submission[]
+  submissions         Submission[]
 
   @@map("users")
 }
@@ -153,11 +153,12 @@ model TaskAssignment {
   developer          User                @relation("TaskAssignmentDeveloper", fields: [developerId], references: [id])
   assignedByUser     User                @relation("TaskAssignmentAssignedBy", fields: [assignedBy], references: [id])
   unassignmentReason UnassignmentReason? @relation(fields: [unassignmentReasonId], references: [id])
-  submissions Submission[]
+  submissions        Submission[]
 
   @@map("task_assignments")
 }
 
+//
 model Submission {
   id               BigInt   @id @default(autoincrement())
   taskId           BigInt   @map("task_id")
@@ -168,9 +169,9 @@ model Submission {
   notes            String?  @db.Text
   submittedAt      DateTime @default(now()) @map("submitted_at")
 
-  task       Task           @relation(fields: [taskId], references: [id])
-  submittedByUser User      @relation(fields: [submittedBy], references: [id])
-  assignment TaskAssignment @relation(fields: [assignmentId], references: [id])
+  task            Task           @relation(fields: [taskId], references: [id])
+  submittedByUser User           @relation(fields: [submittedBy], references: [id])
+  assignment      TaskAssignment @relation(fields: [assignmentId], references: [id])
 
   @@unique([taskId, submissionNumber])
   @@map("submissions")

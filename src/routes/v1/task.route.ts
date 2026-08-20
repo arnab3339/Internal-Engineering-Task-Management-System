@@ -35,23 +35,19 @@ taskRouter.post(
 taskRouter.patch(
   "/:taskId/status",
   authenticateUser,
-  authorizeUser(RoleName.DEVELOPER),
+  authorizeUser(RoleName.ADMIN, RoleName.DEVELOPER),
   validateRequestParams(taskIdSchema),
   validateRequestBody(updateTaskStatusSchema),
   taskController.updateTaskStatusHandler.bind(taskController)
 );
-// console.log("STATUS ROUTE REGISTERED: PATCH /tasks/:taskId/status");
-// console.log(taskRouter.stack.map((r: any) => ({
-//   path: r.route?.path,
-//   methods: r.route?.methods
-// }))); used for checking if route is working or not.. its getting printed in the terminal
+
 taskRouter.patch(
   "/:taskId",
   authenticateUser,
   authorizeUser(RoleName.ADMIN),
   validateRequestParams(taskIdSchema),
   validateRequestBody(updateTaskSchema),
-  taskController.updateTaskHandler.bind(taskController)
+  taskController.updateTaskStatusHandler.bind(taskController)
 );
 
 
