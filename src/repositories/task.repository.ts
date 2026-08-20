@@ -5,6 +5,7 @@ export interface ITaskRepository {
   findById(id: bigint): Promise<Task | null>;
   create(data: any): Promise<Task>;
   updateTask(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task>;
+  
 }
 
 export class TaskRepository implements ITaskRepository {
