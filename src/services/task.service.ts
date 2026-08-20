@@ -5,7 +5,7 @@ import { NotfoundError, ForbiddenError, BadRequestError} from "../utils/errors/a
 import { UpdateTaskDto } from "../dtos/task.dto.js";
 import { logger } from "../configs/logger.config.js";
 import { ITaskAssignmentRepository } from "../repositories/taskAssignment.repository.js";
-import { validateStatusTransition, validateAdminStatusTransition} from "../utils/helpers/task-status.helper.js";
+import { validateStatusTransition} from "../utils/helpers/task-status.helper.js";
 
 
 export interface ITaskService {
@@ -129,20 +129,14 @@ private async validateTaskExists(taskId: bigint): Promise<Task> {
   const existingTask = await this.validateTaskExists(taskId);
 
   if (role === "DEVELOPER") {
-    await this.validateAssignee(taskId, userId);
+  await this.validateAssignee(taskId, userId);
+}
 
-    validateStatusTransition(
-      existingTask.status as string,
-      status
-    );
-  }
-
-  if (role === "ADMIN") {
-    validateAdminStatusTransition(
-      existingTask.status as string,
-      status
-    );
-  }
+validateStatusTransition(
+  existingTask.status as string,
+  status,
+  role
+);
 
   const updatedTask = await this.taskRepository.updateTaskStatus(
     taskId,
