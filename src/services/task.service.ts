@@ -10,6 +10,7 @@ import { validateStatusTransition, validateAdminStatusTransition} from "../utils
 
 export interface ITaskService {
   getTaskById(taskId: bigint): Promise<Task>;
+  getTasks(userId: bigint, role: string, projectId?: bigint): Promise<Task[]>;
   createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task>;
  updateTask(taskId: bigint, data: UpdateTaskDto): Promise<Task>;
 updateTaskStatus(taskId: bigint,userId: bigint,role: string,status: string): Promise<Task>;}
@@ -64,6 +65,20 @@ private async validateTaskExists(taskId: bigint): Promise<Task> {
 
     return task;
   }
+  async getTasks(userId: bigint, role: string, projectId: bigint): Promise<Task[]> {
+  if (role === "ADMIN") {
+    return this.taskRepository.findAllForAdmin(projectId);
+  }
+
+  if (role === "DEVELOPER") {
+    return this.taskRepository.findAllForDeveloper(
+      userId,
+      projectId
+    );
+  }
+
+  return [];
+}
 
   async createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task> {
     const task = await this.taskRepository.create({
