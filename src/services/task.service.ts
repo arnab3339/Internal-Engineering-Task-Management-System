@@ -2,9 +2,10 @@ import { Prisma, Task } from "../../generated/prisma/client.js";
 import { CreateTaskDto } from "../dtos/task.dto.js";
 import { ITaskRepository } from "../repositories/task.repository.js";
 import { NotfoundError, ForbiddenError, BadRequestError} from "../utils/errors/app.error.js";
-import { UpdateTaskDto,UpdateTaskStatusDto } from "../dtos/task.dto.js";
+import { UpdateTaskDto } from "../dtos/task.dto.js";
 import { logger } from "../configs/logger.config.js";
 import { ITaskAssignmentRepository } from "../repositories/taskAssignment.repository.js";
+import { validateStatusTransition, validateAdminStatusTransition} from "../utils/helpers/task-status.helper.js";
 
 
 export interface ITaskService {
@@ -22,6 +23,37 @@ export class TaskService implements ITaskService {
     this.taskAssignmentRepository = taskAssignmentRepository;
 
   }
+
+  private async validateAssignee(taskId: bigint,userId: bigint): Promise<void> {
+  const currentAssignment =
+    await this.taskAssignmentRepository.findCurrentAssignment(
+      taskId,
+      userId
+    );
+
+    
+
+  if (!currentAssignment) {
+    logger.error(
+      `Task status update failed. User is not the current assignee for task ID: ${taskId}`
+    );
+
+    throw new ForbiddenError(
+      "You are not the current assignee of this task"
+    );
+  }
+}
+private async validateTaskExists(taskId: bigint): Promise<Task> {
+  const task = await this.taskRepository.findById(taskId);
+
+  if (!task) {
+    logger.error(`Task status update failed. Task not found with ID: ${taskId}`);
+    throw new NotfoundError("Task not found");
+  }
+
+  return task;
+}
+
 
   async getTaskById(taskId: bigint): Promise<Task> {
     const task = await this.taskRepository.findById(taskId);
@@ -50,12 +82,7 @@ export class TaskService implements ITaskService {
   }
   
   async updateTask(taskId: bigint, data: UpdateTaskDto) {
-    const existingTask = await this.taskRepository.findById(taskId);
-    
-    if (!existingTask) {
-      logger.error(`Task update failed. Task not found with ID: ${taskId}`);
-      throw new NotfoundError("Task not found"); 
-    }
+    const existingTask = await this.validateTaskExists(taskId);
 
     const updateData: Prisma.TaskUpdateInput = {};
 
@@ -83,68 +110,23 @@ export class TaskService implements ITaskService {
     return updatedTask;
   }
 
-async updateTaskStatus(
-  taskId: bigint,
-  userId: bigint,
-  role: string,
-  status: string
-): Promise<Task> {
-  const existingTask = await this.taskRepository.findById(taskId);
-
-  if (!existingTask) {
-    logger.error(`Task status update failed. Task not found with ID: ${taskId}`);
-    throw new NotfoundError("Task not found");
-  }
+  async updateTaskStatus(taskId: bigint,userId: bigint,role: string, status: string): Promise<Task> {
+  const existingTask = await this.validateTaskExists(taskId);
 
   if (role === "DEVELOPER") {
-    const currentAssignment =
-      await this.taskAssignmentRepository.findCurrentAssignment(
-        taskId,
-        userId
-      );
+    await this.validateAssignee(taskId, userId);
 
-    if (!currentAssignment) {
-      logger.error(
-        `Task status update failed. User is not the current assignee for task ID: ${taskId}`
-      );
-      throw new ForbiddenError(
-        "You are not the current assignee of this task"
-      );
-    }
-
-    const currentStatus = existingTask.status as string;
-
-    if (status !== "IN_PROGRESS") {
-      logger.error(
-        `Task status update failed. Developer attempted invalid status ${status} for task ID: ${taskId}`
-      );
-      throw new BadRequestError(
-        "Task can only be moved to IN_PROGRESS"
-      );
-    }
-
-    if (currentStatus !== "TODO") {
-      logger.error(
-        `Task status update failed. Invalid status transition for task ID: ${taskId}`
-      );
-      throw new BadRequestError(
-        "Task can only be moved to IN_PROGRESS from TODO status"
-      );
-    }
+    validateStatusTransition(
+      existingTask.status as string,
+      status
+    );
   }
 
   if (role === "ADMIN") {
-    if (
-      status !== "COMPLETED" &&
-      status !== "CHANGES_REQUESTED"
-    ) {
-      logger.error(
-        `Admin status update failed. Invalid status ${status} for task ID: ${taskId}`
-      );
-      throw new BadRequestError(
-        "Admin can only move the task to COMPLETED or CHANGES_REQUESTED"
-      );
-    }
+    validateAdminStatusTransition(
+      existingTask.status as string,
+      status
+    );
   }
 
   const updatedTask = await this.taskRepository.updateTaskStatus(
@@ -154,4 +136,5 @@ async updateTaskStatus(
 
   return updatedTask;
 }
+
 }

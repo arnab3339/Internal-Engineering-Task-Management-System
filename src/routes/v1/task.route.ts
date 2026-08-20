@@ -47,7 +47,7 @@ taskRouter.patch(
   authorizeUser(RoleName.ADMIN),
   validateRequestParams(taskIdSchema),
   validateRequestBody(updateTaskSchema),
-  taskController.updateTaskStatusHandler.bind(taskController)
+  taskController.updateTaskHandler.bind(taskController)
 );
 
 

@@ -158,7 +158,6 @@ model TaskAssignment {
   @@map("task_assignments")
 }
 
-//
 model Submission {
   id               BigInt   @id @default(autoincrement())
   taskId           BigInt   @map("task_id")
