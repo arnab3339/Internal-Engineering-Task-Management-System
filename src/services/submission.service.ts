@@ -17,12 +17,14 @@ export class SubmissionService implements ISubmissionService {
     }
     
     async createSubmission(taskId: bigint, submittedBy: bigint, data: CreateSubmissionDto): Promise<Submission> {
-        const task = await this.taskRepository.findById(taskId);
-        if (!task) {
+        const[task,latestSubmissionNumber]=await Promise.all([
+            this.taskRepository.findById(taskId),
+            this.submissionRepository.findLatestSubmissionNumber(taskId),
+        ]);
+        if(!task){
             throw new NotfoundError("Task not found");
         }
-        const latestSubmissionNumber = await this.submissionRepository.findLatestSubmissionNumber(taskId);
-        const submissionNumber = (latestSubmissionNumber??0) + 1;
+        const submissionNumber = (latestSubmissionNumber?.submissionNumber ?? 0) + 1;
         return this.submissionRepository.create({
             task: {
                 connect: {

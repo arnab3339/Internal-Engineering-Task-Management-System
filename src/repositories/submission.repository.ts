@@ -3,7 +3,7 @@ import { prisma } from "../configs/db.config.js";
 
 export interface ISubmissionRepository {
     create(data: Prisma.SubmissionCreateInput): Promise<Submission>;
-    findLatestSubmissionNumber(taskId: bigint): Promise<number>;
+    findLatestSubmissionNumber(taskId: bigint): Promise<{ submissionNumber: number } | null>;
     findById(id: bigint): Promise<Submission | null>;
     findByTaskId(taskId: bigint): Promise<Submission[]>;
 }
@@ -14,7 +14,7 @@ export class SubmissionRepository implements ISubmissionRepository {
             data,
         });
     }
-    async findLatestSubmissionNumber(taskId: bigint): Promise<number> {
+    async findLatestSubmissionNumber(taskId: bigint) {
       const submission = await prisma.submission.findFirst({
         where: {
         taskId,
@@ -26,7 +26,7 @@ export class SubmissionRepository implements ISubmissionRepository {
           submissionNumber: true,
         },
       });
-      return submission?.submissionNumber ?? null;
+      return submission;
     }
     async findById(id: bigint): Promise<Submission | null> {
       return prisma.submission.findUnique({
