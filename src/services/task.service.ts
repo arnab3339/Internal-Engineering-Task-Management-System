@@ -37,14 +37,7 @@ export class TaskService implements ITaskService {
     return this.taskRepository.findAll(where);
   }
 
-  where.assignments = {
-    some: {
-      developerId: userId,
-      isCurrent: true,
-    },
-  };
-
-  return this.taskRepository.findAll(where);
+  return this.taskRepository.findByDeveloper(userId, projectId);
 }
 
   async createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task> {
