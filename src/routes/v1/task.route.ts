@@ -3,8 +3,8 @@ import { TaskController } from "../../controllers/task.controller.js";
 import { TaskService } from "../../services/task.service.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
-import { validateRequestParams,validateRequestBody } from "../../middlewares/validate.middleware.js";
-import { createTaskSchema, taskIdSchema,updateTaskSchema } from "../../dtos/task.dto.js";
+import { validateRequestParams,validateRequestBody, validateRequestQuery } from "../../middlewares/validate.middleware.js";
+import { createTaskSchema, taskIdSchema, updateTaskSchema, getTasksQuerySchema } from "../../dtos/task.dto.js";
 import { RoleName } from "../../types/role.type.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { TaskAssignmentController } from "../../controllers/taskAssignment.controller.js";
@@ -16,7 +16,13 @@ const taskController = new TaskController(new TaskService(new TaskRepository()))
 const taskAssignmentController = new TaskAssignmentController(new TaskAssignmentService(new TaskAssignmentRepository()));
 
 const taskRouter = Router();
-
+taskRouter.get(
+  "/",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN, RoleName.DEVELOPER),
+  validateRequestQuery(getTasksQuerySchema),
+  taskController.getTasksHandler.bind(taskController)
+);
 taskRouter.get(
   "/:taskId",
   authenticateUser,
