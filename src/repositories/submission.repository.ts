@@ -5,6 +5,7 @@ export interface ISubmissionRepository {
     create(data: Prisma.SubmissionCreateInput): Promise<Submission>;
     findLatestSubmissionNumber(taskId: bigint): Promise<number>;
     findById(id: bigint): Promise<Submission | null>;
+    findByTaskId(taskId: bigint): Promise<Submission[]>;
 }
 
 export class SubmissionRepository implements ISubmissionRepository {
