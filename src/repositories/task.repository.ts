@@ -55,15 +55,10 @@ async findAllForDeveloper(developerId: bigint, projectId: bigint): Promise<Task[
       data
     });
   }
-<<<<<<< HEAD
  async updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task> {
   return prisma.task.update({
     where: { id: taskId },
     data: { status: newStatus as any }
   });
 }
-=======
-  
-  
->>>>>>> developer
 }

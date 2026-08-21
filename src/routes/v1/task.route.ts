@@ -62,5 +62,12 @@ taskRouter.patch(
 
 // implemnet all the routes related to task assignment below that
 
+taskRouter.get(
+  "/:taskId/assignment-history",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestParams(taskIdSchema),
+  taskAssignmentController.getAssignmentHistoryHandler.bind(taskAssignmentController)
+);
 
 export default taskRouter;
