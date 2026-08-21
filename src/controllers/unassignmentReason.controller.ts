@@ -18,4 +18,15 @@ export class UnassignmentReasonController {
       next(error);
     }
   }
+   async getUnassignmentReasonByIdHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const reasonId = BigInt(req.params.reasonId as string);
+
+      const reason = await this.unassignmentReasonService.findUnassignmentReasonById(reasonId);
+
+      sendSuccess(res, reason, 200, "Unassignment reason fetched successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
 }
