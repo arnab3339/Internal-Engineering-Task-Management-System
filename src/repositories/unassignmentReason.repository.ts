@@ -1,9 +1,10 @@
-import { UnassignmentReason } from "../../generated/prisma/client.js";
+import { Prisma, UnassignmentReason } from "../../generated/prisma/client.js";
 import { prisma } from "../configs/db.config.js";
 
 export interface IUnassignmentReasonRepository {
   findAll(): Promise<UnassignmentReason[]>;
   findById(id: bigint): Promise<UnassignmentReason | null>;
+  update(id: bigint, data: Prisma.UnassignmentReasonUpdateInput): Promise<UnassignmentReason>;
 }
 
 export class UnassignmentReasonRepository implements IUnassignmentReasonRepository {
@@ -15,4 +16,12 @@ export class UnassignmentReasonRepository implements IUnassignmentReasonReposito
      where: { id },
     });
  }
-}
+
+
+  async update(id: bigint, data: Prisma.UnassignmentReasonUpdateInput): Promise<UnassignmentReason> {
+    return prisma.unassignmentReason.update({
+      where: { id },
+      data,
+    });
+  }
+ }

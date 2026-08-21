@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { IUnassignmentReasonService } from "../services/unassignmentReason.service.js";
 import { sendSuccess } from "../utils/helpers/response.helper.js";
+import { UpdateUnassignmentReasonDto } from "../dtos/unassignmentReason.dto.js";
 
 export class UnassignmentReasonController {
   private readonly unassignmentReasonService: IUnassignmentReasonService;
@@ -25,6 +26,18 @@ export class UnassignmentReasonController {
       const reason = await this.unassignmentReasonService.findUnassignmentReasonById(reasonId);
 
       sendSuccess(res, reason, 200, "Unassignment reason fetched successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+   async updateUnassignmentReasonHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const reasonId = BigInt(req.params.reasonId as string);
+      const data = req.body as UpdateUnassignmentReasonDto;
+
+      const reason = await this.unassignmentReasonService.updateUnassignmentReason(reasonId, data);
+
+      sendSuccess(res, reason, 200, "Unassignment reason updated successfully");
     } catch (error) {
       next(error);
     }

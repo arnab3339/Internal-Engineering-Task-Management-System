@@ -5,8 +5,8 @@ import { UnassignmentReasonService } from "../../services/unassignmentReason.ser
 import { UnassignmentReasonRepository } from "../../repositories/unassignmentReason.repository.js";
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
-import { validateRequestParams } from "../../middlewares/validate.middleware.js";
-import { reasonIdParamSchema } from "../../dtos/unassignmentReason.dto.js";
+import { validateRequestBody, validateRequestParams } from "../../middlewares/validate.middleware.js";
+import { reasonIdParamSchema, updateUnassignmentReasonSchema } from "../../dtos/unassignmentReason.dto.js";
 import { RoleName } from "../../types/role.type.js";
 
 const unassignmentReasonController = new UnassignmentReasonController(
@@ -28,6 +28,15 @@ unassignmentReasonRouter.get(
   authorizeUser(RoleName.ADMIN),
   validateRequestParams(reasonIdParamSchema),
   unassignmentReasonController.getUnassignmentReasonByIdHandler.bind(unassignmentReasonController)
+);
+
+unassignmentReasonRouter.patch(
+  "/:reasonId",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestParams(reasonIdParamSchema),
+  validateRequestBody(updateUnassignmentReasonSchema),
+  unassignmentReasonController.updateUnassignmentReasonHandler.bind(unassignmentReasonController)
 );
 
 export default unassignmentReasonRouter;
