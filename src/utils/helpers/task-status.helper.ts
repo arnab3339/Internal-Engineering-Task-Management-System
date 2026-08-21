@@ -1,38 +1,46 @@
 import { BadRequestError } from "../errors/app.error.js";
 import { RoleName } from "../../types/role.type.js";
+import { TaskStatus } from "../../../generated/prisma/client.js";
 
-export function validateStatusTransition(
-  currentStatus: string,
-  nextStatus: string,
-  role: string
-): void {
+
+export function validateStatusTransition( currentStatus: TaskStatus,nextStatus: TaskStatus,role: RoleName): void {
 
   if (role === RoleName.DEVELOPER) {
-    if (
-      nextStatus !== "IN_PROGRESS" ||
-      (
-        currentStatus !== "TODO" &&
-        currentStatus !== "CHANGES_REQUESTED" &&
-        currentStatus !== "REOPENED"
-      )
-    ) {
-      throw new BadRequestError(
-        `Task cannot be moved from ${currentStatus} to ${nextStatus}`
-      );
-    }
+    validateDeveloperTransition(currentStatus, nextStatus);
+    return;
   }
 
   if (role === RoleName.ADMIN) {
-    if (
-      currentStatus !== "IN_REVIEW" ||
-      (
-        nextStatus !== "COMPLETED" &&
-        nextStatus !== "CHANGES_REQUESTED"
-      )
-    ) {
-      throw new BadRequestError(
-        `Task cannot be moved from ${currentStatus} to ${nextStatus}`
-      );
-    }
+    validateAdminTransition(currentStatus, nextStatus);
+  }
+}
+
+  function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
+
+  if (
+    nextStatus !== TaskStatus.IN_PROGRESS ||
+    (
+      currentStatus !== TaskStatus.TODO &&
+      currentStatus !== TaskStatus.CHANGES_REQUESTED
+    )
+  ) {
+    throw new BadRequestError(
+      `Task cannot be moved from ${currentStatus} to ${nextStatus}`
+    );
+  }
+}
+
+function validateAdminTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
+
+  if (
+    currentStatus !== TaskStatus.IN_REVIEW ||
+    (
+      nextStatus !== TaskStatus.COMPLETED &&
+      nextStatus !== TaskStatus.CHANGES_REQUESTED
+    )
+  ) {
+    throw new BadRequestError(
+      `Task cannot be moved from ${currentStatus} to ${nextStatus}`
+    );
   }
 }

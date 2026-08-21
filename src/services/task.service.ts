@@ -1,4 +1,4 @@
-import { Prisma, Task } from "../../generated/prisma/client.js";
+import { Prisma, Task,TaskStatus} from "../../generated/prisma/client.js";
 import { CreateTaskDto } from "../dtos/task.dto.js";
 import { ITaskRepository } from "../repositories/task.repository.js";
 import { NotfoundError, ForbiddenError, BadRequestError} from "../utils/errors/app.error.js";
@@ -6,14 +6,15 @@ import { UpdateTaskDto } from "../dtos/task.dto.js";
 import { logger } from "../configs/logger.config.js";
 import { ITaskAssignmentRepository } from "../repositories/taskAssignment.repository.js";
 import { validateStatusTransition} from "../utils/helpers/task-status.helper.js";
+import { RoleName } from "../types/role.type.js";
 
 
 export interface ITaskService {
   getTaskById(taskId: bigint): Promise<Task>;
   getTasks(userId: bigint, role: string, projectId?: bigint): Promise<Task[]>;
   createTask(data: CreateTaskDto, createdBy: bigint): Promise<Task>;
- updateTask(taskId: bigint, data: UpdateTaskDto): Promise<Task>;
-updateTaskStatus(taskId: bigint,userId: bigint,role: string,status: string): Promise<Task>;}
+  updateTask(taskId: bigint, data: UpdateTaskDto): Promise<Task>;
+  updateTaskStatus(taskId: bigint,userId: bigint,role: RoleName, status: TaskStatus): Promise<Task>;}
 
 export class TaskService implements ITaskService {
   private readonly taskRepository: ITaskRepository;
@@ -65,12 +66,12 @@ private async validateTaskExists(taskId: bigint): Promise<Task> {
 
     return task;
   }
-  async getTasks(userId: bigint, role: string, projectId: bigint): Promise<Task[]> {
-  if (role === "ADMIN") {
+  async getTasks(userId: bigint, role: RoleName, projectId: bigint): Promise<Task[]> {
+  if (role === RoleName.ADMIN) {
     return this.taskRepository.findAllForAdmin(projectId);
   }
 
-  if (role === "DEVELOPER") {
+  if (role === RoleName.DEVELOPER) {
     return this.taskRepository.findAllForDeveloper(
       userId,
       projectId
@@ -125,17 +126,17 @@ private async validateTaskExists(taskId: bigint): Promise<Task> {
     return updatedTask;
   }
 
-  async updateTaskStatus(taskId: bigint,userId: bigint,role: string, status: string): Promise<Task> {
+  async updateTaskStatus(taskId: bigint,userId: bigint,role: RoleName, status: TaskStatus): Promise<Task> {
   const existingTask = await this.validateTaskExists(taskId);
 
-  if (role === "DEVELOPER") {
+  if (role === RoleName.DEVELOPER) {
   await this.validateAssignee(taskId, userId);
 }
 
 validateStatusTransition(
-  existingTask.status as string,
-  status,
-  role
+    existingTask.status,
+    status,
+    role
 );
 
   const updatedTask = await this.taskRepository.updateTaskStatus(

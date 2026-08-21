@@ -35,9 +35,7 @@ export const updateTaskSchema = z.object({
 );
 
 export const updateTaskStatusSchema = z.object({
-  status: z.literal(TaskStatus.IN_PROGRESS, {
-    message: "Developer can only transition task to IN_PROGRESS"
-  })
+  status: z.enum(TaskStatus)
 });
 
 

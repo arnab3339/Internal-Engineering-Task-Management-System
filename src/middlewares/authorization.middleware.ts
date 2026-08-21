@@ -8,7 +8,6 @@ export const authorizeUser = (...allowedRoles: RoleName[]) => (req: Request, _re
     try {
         const { user } = req as AuthenticatedRequest;
 
-
         if(!allowedRoles.includes(user.role as RoleName)) {
             throw new UnauthorizedError('You are not authorized to use this feature');
         }
