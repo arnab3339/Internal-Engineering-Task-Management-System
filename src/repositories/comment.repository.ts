@@ -10,8 +10,11 @@ export interface ICommentRepository {
 }
 
 export class CommentRepository implements ICommentRepository {
-    async create(data: Prisma.CommentCreateInput): Promise<Comment> {}
-
+    async create(data: Prisma.CommentCreateInput): Promise<Comment> {
+        return prisma.comment.create({
+            data,
+        });
+    }
     async getAll(): Promise<Comment[]> {}
 
     async get(id: bigint): Promise<Comment> {}
