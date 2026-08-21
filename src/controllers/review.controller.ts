@@ -25,4 +25,16 @@ export class ReviewController {
       next(error);
     }
   }
+  async getPendingReviewsHandler(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+    ) {
+        try {
+            const reviews = await this.reviewService.getPendingReviews();
+            sendSuccess(res, reviews, 200, "Pending reviews fetched successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
 }

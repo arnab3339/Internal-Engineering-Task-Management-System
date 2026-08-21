@@ -1,9 +1,10 @@
-import { Review } from "../generated/prisma/client.js";
+import { Review, Submission} from "../../generated/prisma/client.js";
 import { CreateReviewDTO } from "../dtos/review.dto.js";
 import { IReviewRepository } from "../repositories/review.repository.js";
 
 export interface IReviewService {
   createReview(submissionId: bigint,reviewedBy: bigint,data: CreateReviewDTO): Promise<Review>;
+  getPendingReviews(): Promise<Submission[]>;
 }
 export class ReviewService implements IReviewService {
   private readonly reviewRepository: IReviewRepository;
@@ -30,8 +31,12 @@ export class ReviewService implements IReviewService {
       testingScore: data.testingScore,
       deliveryTimingScore: data.deliveryTimingScore,
       prCommitQualityScore: data.prCommitQualityScore,
-      feedback: data.feedback,
+      feedback: data.feedback??null,
       decision: data.decision,
     });
   }
+  async getPendingReviews(): Promise<Submission[]> {
+    return this.reviewRepository.getPendingReviews();
+  }
+  //TODO- Update Task Status
 }

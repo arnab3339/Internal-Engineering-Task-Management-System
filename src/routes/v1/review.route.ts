@@ -20,3 +20,11 @@ reviewRouter.post(
   validateRequestBody(createReviewSchema),
   reviewController.createReviewHandler.bind(reviewController)
 );
+
+
+reviewRouter.get(
+  "/pending",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  reviewController.getPendingReviewsHandler.bind(reviewController)
+);
