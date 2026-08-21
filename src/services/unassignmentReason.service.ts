@@ -8,6 +8,7 @@ export interface IUnassignmentReasonService {
   findAllUnassignmentReasons(): Promise<UnassignmentReason[]>;
   findUnassignmentReasonById(reasonId: bigint): Promise<UnassignmentReason>; 
   updateUnassignmentReason(reasonId: bigint, data: UpdateUnassignmentReasonDto): Promise<UnassignmentReason>;
+  deleteUnassignmentReason(reasonId: bigint): Promise<UnassignmentReason>;
 }
 
 export class UnassignmentReasonService implements IUnassignmentReasonService {
@@ -56,5 +57,21 @@ export class UnassignmentReasonService implements IUnassignmentReasonService {
     }
   }
 
+  async deleteUnassignmentReason(reasonId: bigint): Promise<UnassignmentReason> {
+    try {
+      return await this.unassignmentReasonRepository.delete(reasonId);
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+        throw new NotfoundError(`No unassignment reason found with this given id: ${reasonId}`);
+      }
 
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
+        throw new ConflictError(
+          "Cannot delete this reason — it is currently referenced by one or more task assignments"
+        );
+      }
+
+      throw new InternalServerError("Failed to delete unassignment reason");
+    }
+  }
 }

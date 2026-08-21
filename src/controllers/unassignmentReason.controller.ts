@@ -42,4 +42,16 @@ export class UnassignmentReasonController {
       next(error);
     }
   }
+ async deleteUnassignmentReasonHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const reasonId = BigInt(req.params.reasonId as string);
+
+      const reason = await this.unassignmentReasonService.deleteUnassignmentReason(reasonId);
+
+      sendSuccess(res, reason, 200, "Unassignment reason deleted successfully");
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

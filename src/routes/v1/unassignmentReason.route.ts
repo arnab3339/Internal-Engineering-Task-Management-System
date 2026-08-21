@@ -39,4 +39,12 @@ unassignmentReasonRouter.patch(
   unassignmentReasonController.updateUnassignmentReasonHandler.bind(unassignmentReasonController)
 );
 
+unassignmentReasonRouter.delete(
+  "/:reasonId",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestParams(reasonIdParamSchema),
+  unassignmentReasonController.deleteUnassignmentReasonHandler.bind(unassignmentReasonController)
+);
+
 export default unassignmentReasonRouter;

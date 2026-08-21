@@ -5,6 +5,7 @@ export interface IUnassignmentReasonRepository {
   findAll(): Promise<UnassignmentReason[]>;
   findById(id: bigint): Promise<UnassignmentReason | null>;
   update(id: bigint, data: Prisma.UnassignmentReasonUpdateInput): Promise<UnassignmentReason>;
+  delete(id: bigint): Promise<UnassignmentReason>;
 }
 
 export class UnassignmentReasonRepository implements IUnassignmentReasonRepository {
@@ -22,6 +23,12 @@ export class UnassignmentReasonRepository implements IUnassignmentReasonReposito
     return prisma.unassignmentReason.update({
       where: { id },
       data,
+    });
+  }
+
+  async delete(id: bigint): Promise<UnassignmentReason> {
+    return prisma.unassignmentReason.delete({
+      where: { id },
     });
   }
  }
