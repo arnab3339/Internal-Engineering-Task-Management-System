@@ -28,7 +28,7 @@ export class SubmissionService implements ISubmissionService {
         // implement properly
     }
 
-    async findTaskSubmissions(taskId: bigint, userId: bigint, role: string): Promise<Submission[]> {
+    async findTaskSubmissions(taskId: bigint): Promise<Submission[]> {
         const task = await this.taskRepository.findById(taskId);
 
         if (!task) {
