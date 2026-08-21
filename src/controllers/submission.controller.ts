@@ -11,7 +11,7 @@ export class SubmissionController {
     async createSubmissionHandler(req: Request, res: Response, next: NextFunction) {
         try {
             const { user } = req as AuthenticatedRequest;
-            const taskId = req.params.taskId as string;
+            const taskId = BigInt(req.params.taskId as string);
             const submissionData = req.body;
 
             const submission = await this.submissionService.createSubmission(BigInt(taskId),user.userId,submissionData);
@@ -23,7 +23,7 @@ export class SubmissionController {
     }
     async getSubmissionByIdHandler(req: Request, res: Response, next: NextFunction) {
         try {
-            const submissionId = req.params.submissionId as string;
+            const submissionId = BigInt(req.params.submissionId as string);
 
             const submission = await this.submissionService.findSubmissionById(BigInt(submissionId));
 
