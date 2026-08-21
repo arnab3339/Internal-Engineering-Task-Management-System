@@ -9,6 +9,7 @@ import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { RoleName } from "../../types/role.type.js";
 import { createSubmissionSchema } from "../../dtos/submission.dto.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
+import { taskIdSchema } from "../../dtos/task.dto.js";
 
 export const submissionRouter = Router();
 
@@ -19,6 +20,7 @@ submissionRouter.post(
     "/",
     authenticateUser,
     validateRequestBody(createSubmissionSchema),
+    validateRequestParams(taskIdSchema),
     submissionController.createSubmissionHandler.bind(submissionController)
 );
 
