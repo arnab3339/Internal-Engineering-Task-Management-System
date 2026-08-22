@@ -6,7 +6,7 @@ import { UnassignmentReasonRepository } from "../../repositories/unassignmentRea
 import { authenticateUser } from "../../middlewares/authentication.middleware.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
 import { validateRequestBody, validateRequestParams } from "../../middlewares/validate.middleware.js";
-import { reasonIdParamSchema, updateUnassignmentReasonSchema } from "../../dtos/unassignmentReason.dto.js";
+import { createUnassignmentReasonSchema,reasonIdParamSchema, updateUnassignmentReasonSchema } from "../../dtos/unassignmentReason.dto.js";
 import { RoleName } from "../../types/role.type.js";
 
 const unassignmentReasonController = new UnassignmentReasonController(
@@ -14,6 +14,14 @@ const unassignmentReasonController = new UnassignmentReasonController(
 );
 
 const unassignmentReasonRouter = Router();
+
+unassignmentReasonRouter.post(
+  "/",
+  authenticateUser,
+  authorizeUser(RoleName.ADMIN),
+  validateRequestBody(createUnassignmentReasonSchema),
+  unassignmentReasonController.createUnassignmentReasonHandler.bind(unassignmentReasonController)
+);
 
 unassignmentReasonRouter.get(
   "/",
