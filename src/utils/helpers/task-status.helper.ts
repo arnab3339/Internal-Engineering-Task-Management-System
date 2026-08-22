@@ -32,7 +32,7 @@ function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskS
 function validateAdminTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
   const canCompleteTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.COMPLETED;
 
-  const canRequestChangeTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.REOPENED;S
+  const canRequestChangeTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.REOPENED;
 
   if(!canCompleteTask || !canRequestChangeTask) {
     throw new BadRequestError(`Admin can not move task from ${currentStatus} to ${nextStatus}`);
