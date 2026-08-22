@@ -14,6 +14,6 @@ router.use("/roles", roleRouter);
 router.use("/auth", authRouter);
 router.use("/projects", projectRouter);
 router.use("/tasks", taskRouter);
-router.use("/submissions", submissionRouter);
+
 
 export default router;

@@ -7,6 +7,8 @@ import { validateRequestParams,validateRequestBody, validateRequestQuery } from 
 import { createTaskSchema, taskIdSchema, updateTaskSchema,updateTaskStatusSchema, getTasksQuerySchema } from "../../dtos/task.dto.js";
 import { RoleName } from "../../types/role.type.js";
 import { authorizeUser } from "../../middlewares/authorization.middleware.js";
+import { submissionRouter } from "./submission.route.js";
+
 import { TaskAssignmentController } from "../../controllers/taskAssignment.controller.js";
 import { TaskAssignmentService } from "../../services/taskAssignment.service.js";
 import { TaskAssignmentRepository } from "../../repositories/taskAssignment.repository.js";
@@ -71,6 +73,7 @@ taskRouter.patch(
   taskController.updateTaskHandler.bind(taskController)
 );
 
+taskRouter.use("/:taskId/submissions", submissionRouter);
 
 
 // implemnet all the routes related to task assignment below that
