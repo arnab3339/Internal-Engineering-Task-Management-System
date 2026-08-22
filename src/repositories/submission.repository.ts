@@ -2,14 +2,14 @@ import { Prisma, Submission } from "../../generated/prisma/client.js";
 import { prisma } from "../configs/db.config.js";
 
 export interface ISubmissionRepository {
-    create(data: {taskId: bigint;submittedBy: bigint;assignmentId: bigint;submissionNumber: number;prUrl: string;notes: string | null;}): Promise<Submission>;
+    create(data: Prisma.SubmissionCreateInput): Promise<Submission>;
     findLatestSubmissionNumber(taskId: bigint): Promise<{ submissionNumber: number } | null>;
     findById(id: bigint): Promise<Submission | null>;
     findByTaskId(taskId: bigint): Promise<Submission[]>;
 }
 
 export class SubmissionRepository implements ISubmissionRepository {
-    async create(data: {taskId: bigint;submittedBy: bigint;assignmentId: bigint;submissionNumber: number;prUrl: string;notes: string | null;}): Promise<Submission> {
+    async create(data: Prisma.SubmissionCreateInput): Promise<Submission> {
       return prisma.submission.create({
         data: {
             task: {
