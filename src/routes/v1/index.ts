@@ -6,6 +6,7 @@ import projectRouter from "./project.route.js";
 
 import taskRouter from "./task.route.js";
 import { submissionRouter } from "./submission.route.js";
+import { commentRouter } from "./comment.route.js";
 const router = Router();
 
 router.use("/users", userRouter);
@@ -14,5 +15,6 @@ router.use("/auth", authRouter);
 router.use("/projects", projectRouter);
 router.use("/tasks", taskRouter);
 router.use("/submissions", submissionRouter);
+router.use("/comments",commentRouter);
 
 export default router;

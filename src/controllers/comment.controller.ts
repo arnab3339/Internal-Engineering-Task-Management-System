@@ -28,7 +28,19 @@ export class CommentController {
 
     async getCommentHandler(req: Request, res: Response, next: NextFunction): Promise<void> {}
 
-    async updateCommentHandler(req: Request, res: Response, next: NextFunction): Promise<void> {}
+    async updateCommentHandler(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const { user } = req as AuthenticatedRequest;
+            const commentId = req.params.commentId as string;
+            const commentData = req.body;
+
+            const comment = await this.commentService.updateComment(BigInt(commentId),user.userId,commentData);
+
+            sendSuccess(res, comment, 200, "Comment updated successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
 
     async deleteCommentHandler(req: Request, res: Response, next: NextFunction): Promise<void> {}
 }
