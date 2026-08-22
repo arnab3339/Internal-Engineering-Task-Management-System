@@ -7,6 +7,7 @@ export interface ITaskRepository {
   findAllForDeveloper(developerId: bigint, projectId: bigint): Promise<Task[]>;
   create(data: any): Promise<Task>;
   updateTask(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task>;
+  updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task>;
 }
 
 export class TaskRepository implements ITaskRepository {
@@ -54,6 +55,10 @@ async findAllForDeveloper(developerId: bigint, projectId: bigint): Promise<Task[
       data
     });
   }
-  
-  
+ async updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task> {
+  return prisma.task.update({
+    where: { id: taskId },
+    data: { status: newStatus as any }
+  });
+}
 }

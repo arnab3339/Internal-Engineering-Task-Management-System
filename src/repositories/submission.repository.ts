@@ -9,9 +9,28 @@ export interface ISubmissionRepository {
 }
 
 export class SubmissionRepository implements ISubmissionRepository {
-    async create(data: Prisma.SubmissionCreateInput): Promise<Submission> {
-        return prisma.submission.create({
-            data,
+    async create(data: {taskId: bigint;submittedBy: bigint;assignmentId: bigint;submissionNumber: number;prUrl: string;notes: string | null;}): Promise<Submission> {
+      return prisma.submission.create({
+        data: {
+            task: {
+                connect: {
+                    id: data.taskId,
+                },
+            },
+            submittedByUser: {
+                connect: {
+                    id: data.submittedBy,
+                },
+            },
+            assignment: {
+                connect: {
+                    id: data.assignmentId,
+                },
+            },
+            submissionNumber: data.submissionNumber,
+            prUrl: data.prUrl,
+            notes: data.notes,
+            },
         });
     }
     async findLatestSubmissionNumber(taskId: bigint) {

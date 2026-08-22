@@ -25,26 +25,14 @@ export class SubmissionService implements ISubmissionService {
             throw new NotfoundError("Task not found");
         }
         const submissionNumber = (latestSubmissionNumber?.submissionNumber ?? 0) + 1;
-        return this.submissionRepository.create({
-            task: {
-                connect: {
-                    id: taskId,
-                },
-            },
-            submittedByUser: {
-                connect: {
-                    id: submittedBy,
-                },
-            },
-            assignment: {
-                connect: {
-                    id: data.assignmentId,
-                },
-            },
-            submissionNumber, 
-            prUrl: data.prUrl,
-            notes: data.notes??null,
-        });
+            return this.submissionRepository.create({
+                taskId,
+                submittedBy,
+                assignmentId: data.assignmentId,
+                submissionNumber,
+                prUrl: data.prUrl,
+                notes: data.notes ?? null,
+            });
     }
     async findSubmissionById(id: bigint): Promise<Submission | null> {
         return this.submissionRepository.findById(id);
