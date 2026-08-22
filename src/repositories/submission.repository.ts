@@ -37,7 +37,7 @@ export class SubmissionRepository implements ISubmissionRepository {
 
         await tx.task.update({
             where: {
-                id: taskId,
+                id: data.taskId,
             },
             data: {
                 status: TaskStatus.READY_FOR_REVIEW,
