@@ -1,14 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-<<<<<<< HEAD
 import { sendSuccess } from "../utils/helpers/response.helper.js";
 import { ISubmissionService } from "../services/submission.service.js";
 import { AuthenticatedRequest } from "../types/express.js";
-=======
-import { ISubmissionService } from "../services/submission.service.js";
-import { sendSuccess } from "../utils/helpers/response.helper.js";
-import { AuthenticatedRequest } from "../types/express.js";
-
->>>>>>> developer
 export class SubmissionController {
     private readonly submissionService: ISubmissionService; 
 

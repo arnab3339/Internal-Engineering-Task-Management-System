@@ -32,6 +32,7 @@ export class SubmissionRepository implements ISubmissionRepository {
             notes: data.notes,
             },
         });
+        
     }
     async findLatestSubmissionNumber(taskId: bigint): Promise<number | null>{
       const submission = await prisma.submission.findFirst({
