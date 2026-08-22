@@ -4,7 +4,7 @@ import { CreateSubmissionDto } from "../dtos/submission.dto.js";
 import { Submission } from "../../generated/prisma/client.js";
 import { NotfoundError} from "../utils/errors/app.error.js";
 import { ITaskRepository } from "../repositories/task.repository.js";
-import { TaskStatus } from "../../generated/prisma/client.js";
+
 
 
 export interface ISubmissionService {
@@ -20,52 +20,24 @@ export class SubmissionService implements ISubmissionService {
     }
     
     async createSubmission(taskId: bigint, submittedBy: bigint, data: CreateSubmissionDto): Promise<Submission> {
-        return await prisma.$transaction(async (tx) => {
-            const [task, latestSubmission] = await Promise.all([
-                tx.task.findUnique({
-                    where: {
-                        id: taskId,
-                    },
-                }),
+        const [task, latestSubmission] = await Promise.all([
+        this.taskRepository.findById(taskId),
+        this.submissionRepository.findLatestSubmissionNumber(taskId),
+    ]);
 
-                tx.submission.findFirst({
-                    where: {
-                        taskId,
-                    },
-                    orderBy: {
-                        submissionNumber: "desc",
-                    },
-                }),
-            ]);
+    if (!task) {
+        throw new NotfoundError("Task not found");
+    }
 
-            if (!task) {
-                throw new NotfoundError("Task not found");
-            }
+    const submissionNumber = (latestSubmission ?? 0) + 1;
 
-            const submissionNumber =
-                (latestSubmission?.submissionNumber ?? 0) + 1;
-
-            const submission = await tx.submission.create({
-                data: {
-                    taskId,
-                    submittedBy,
-                    assignmentId: data.assignmentId,
-                    submissionNumber,
-                    prUrl: data.prUrl,
-                    notes: data.notes ?? null,
-                },
-            });
-
-            await tx.task.update({
-                where: {
-                    id: taskId,
-                },
-                data: {
-                    status: TaskStatus.READY_FOR_REVIEW,
-                },
-            });
-
-            return submission;
+    return this.submissionRepository.create({
+        taskId,
+        submittedBy,
+        assignmentId: data.assignmentId,
+        submissionNumber,
+        prUrl: data.prUrl,
+        notes: data.notes ?? null,
         });
     }
     

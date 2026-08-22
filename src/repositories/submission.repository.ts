@@ -1,5 +1,6 @@
 import { Prisma, Submission } from "../../generated/prisma/client.js";
 import { prisma } from "../configs/db.config.js";
+import { TaskStatus } from "../../generated/prisma/client.js";
 
 export interface ISubmissionRepository {
     create(data: Prisma.SubmissionCreateInput): Promise<Submission>;
@@ -10,28 +11,41 @@ export interface ISubmissionRepository {
 
 export class SubmissionRepository implements ISubmissionRepository {
     async create(data: Prisma.SubmissionCreateInput): Promise<Submission> {
-      return prisma.submission.create({
-        data: {
-            task: {
-                connect: {
-                    id: data.taskId,
+      return prisma.$transaction(async (tx) => {
+        const submission = await tx.submission.create({
+            data: {
+                task: {
+                    connect: {
+                        id: data.taskId,
+                    },
                 },
-            },
-            submittedByUser: {
-                connect: {
-                    id: data.submittedBy,
+                submittedByUser: {
+                    connect: {
+                        id: data.submittedBy,
+                    },
                 },
-            },
-            assignment: {
-                connect: {
-                    id: data.assignmentId,
+                assignment: {
+                    connect: {
+                        id: data.assignmentId,
+                    },
                 },
-            },
-            submissionNumber: data.submissionNumber,
-            prUrl: data.prUrl,
-            notes: data.notes,
+                submissionNumber: data.submissionNumber,
+                prUrl: data.prUrl,
+                notes: data.notes,
             },
         });
+
+        await tx.task.update({
+            where: {
+                id: taskId,
+            },
+            data: {
+                status: TaskStatus.READY_FOR_REVIEW,
+            },
+        });
+
+        return submission;
+      });
         
     }
     async findLatestSubmissionNumber(taskId: bigint): Promise<number | null>{
