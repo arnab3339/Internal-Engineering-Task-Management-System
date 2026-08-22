@@ -1,7 +1,14 @@
 import { Request, Response, NextFunction } from "express";
+<<<<<<< HEAD
 import { sendSuccess } from "../utils/helpers/response.helper.js";
 import { ISubmissionService } from "../services/submission.service.js";
 import { AuthenticatedRequest } from "../types/express.js";
+=======
+import { ISubmissionService } from "../services/submission.service.js";
+import { sendSuccess } from "../utils/helpers/response.helper.js";
+import { AuthenticatedRequest } from "../types/express.js";
+
+>>>>>>> developer
 export class SubmissionController {
     private readonly submissionService: ISubmissionService; 
 
@@ -28,6 +35,19 @@ export class SubmissionController {
             const submission = await this.submissionService.findSubmissionById(BigInt(submissionId));
 
             sendSuccess(res, submission, 200, "Submission fetched successfully");
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getTaskSubmissionsHandler(req: Request, res: Response, next: NextFunction) {
+        try {
+            const taskId = req.params.taskId as string;
+            const { user } = req as AuthenticatedRequest;
+
+            const submissions = await this.submissionService.findTaskSubmissions(BigInt(taskId), user.userId, user.role);
+
+            sendSuccess(res, submissions, 200, "Submissions fetched successfully");
         } catch (error) {
             next(error);
         }

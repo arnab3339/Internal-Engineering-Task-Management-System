@@ -29,6 +29,6 @@ export class TaskAssignmentService implements ITaskAssignmentService {
         // implement properly
     }
     async getAssignmentHistory(taskId: bigint): Promise<TaskAssignment[]> {
-    return this.taskassignmentRepository.getAssignmentHistory(taskId);
-}
+        return this.taskassignmentRepository.getAssignmentHistory(taskId);
+    }
 }

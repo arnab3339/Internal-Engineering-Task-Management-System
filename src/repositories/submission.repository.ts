@@ -57,13 +57,10 @@ export class SubmissionRepository implements ISubmissionRepository {
   
     async findByTaskId(taskId: bigint): Promise<Submission[]> {
         return prisma.submission.findMany({
-            where: {
-                taskId
-            },
-            orderBy: {
-                submissionNumber: 'asc'
-            }
+            where: { taskId },
+            orderBy: { submissionNumber: "desc" },
         });
+
     }
 
 }

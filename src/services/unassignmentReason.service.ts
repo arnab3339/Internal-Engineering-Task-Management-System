@@ -16,5 +16,6 @@ export class UnassignmentReasonService implements IUnassignmentReasonService {
     }
 
     async getAllReasons(): Promise<UnassignmentReason[]> {
-        return this.unassignmentReasonRepository.getAllReasons();    }
+        return this.unassignmentReasonRepository.getAllReasons();    
+    }
 }

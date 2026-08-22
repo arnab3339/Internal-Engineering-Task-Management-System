@@ -127,24 +127,20 @@ private async validateTaskExists(taskId: bigint): Promise<Task> {
   }
 
   async updateTaskStatus(taskId: bigint,userId: bigint,role: RoleName, status: TaskStatus): Promise<Task> {
-  const existingTask = await this.validateTaskExists(taskId);
+    const existingTask = await this.validateTaskExists(taskId);
 
-  if (role === RoleName.DEVELOPER) {
-  await this.validateAssignee(taskId, userId);
-}
+    if (role === RoleName.DEVELOPER) {
+      await this.validateAssignee(taskId, userId);
+    }
 
-validateStatusTransition(
-    existingTask.status,
-    status,
-    role
-);
+    validateStatusTransition(existingTask.status, status, role);
 
-  const updatedTask = await this.taskRepository.updateTaskStatus(
-    taskId,
-    status
-  );
+    const updatedTask = await this.taskRepository.updateTaskStatus(
+      taskId,
+      status
+    );
 
-  return updatedTask;
-}
+    return updatedTask;
+  }
 
 }

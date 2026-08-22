@@ -15,25 +15,26 @@ export class TaskAssignmentRepository implements ITaskAssignmentRepository {
     }
 
     async findCurrentAssignment(taskId: bigint, developerId: bigint): Promise<TaskAssignment | null> {
-    return prisma.taskAssignment.findFirst({
-        where: {
-            taskId,
-            developerId,
-            isCurrent: true
-        }
-    });
- }
+        return prisma.taskAssignment.findFirst({
+            where: {
+                taskId,
+                developerId,
+                isCurrent: true
+            }
+        });
+    }
 
- async getAssignmentHistory(taskId: bigint): Promise<TaskAssignment[]> {
-    return prisma.taskAssignment.findMany({
-        where: {
-            taskId
-        },
-        orderBy: {
-            assignedAt: "asc"
-        }
-    });
+    async getAssignmentHistory(taskId: bigint): Promise<TaskAssignment[]> {
+        return prisma.taskAssignment.findMany({
+            where: {
+                taskId
+            },
+            orderBy: {
+                assignedAt: "asc"
+            }
+        });
+    }
 }
 
-}
+
 

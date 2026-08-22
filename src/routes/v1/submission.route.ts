@@ -11,8 +11,8 @@ import { createSubmissionSchema } from "../../dtos/submission.dto.js";
 import { TaskRepository } from "../../repositories/task.repository.js";
 import { taskIdSchema } from "../../dtos/task.dto.js";
 
-export const submissionRouter = Router();
 
+export const submissionRouter = Router({ mergeParams: true });
 const submissionController = new SubmissionController(new SubmissionService(new SubmissionRepository(),new TaskRepository()));
 
 // implement all the routers below
@@ -31,3 +31,14 @@ submissionRouter.get(
     validateRequestParams(submissionIdSchema),
     submissionController.getSubmissionByIdHandler.bind(submissionController)
 );
+
+
+
+submissionRouter.get(
+    "/",
+    authenticateUser,
+    authorizeUser(RoleName.ADMIN),
+    validateRequestParams(taskIdSchema),
+    submissionController.getTaskSubmissionsHandler.bind(submissionController)
+);
+// implement all the routers below
