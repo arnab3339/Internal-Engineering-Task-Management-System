@@ -1,10 +1,9 @@
-import { BadRequestError } from "../errors/app.error.js";
+import { BadRequestError, ForbiddenError } from "../errors/app.error.js";
 import { RoleName } from "../../types/role.type.js";
 import { TaskStatus } from "../../../generated/prisma/client.js";
 
 
 export function validateStatusTransition( currentStatus: TaskStatus,nextStatus: TaskStatus,role: RoleName): void {
-
   if (role === RoleName.DEVELOPER) {
     validateDeveloperTransition(currentStatus, nextStatus);
     return;
@@ -12,35 +11,32 @@ export function validateStatusTransition( currentStatus: TaskStatus,nextStatus: 
 
   if (role === RoleName.ADMIN) {
     validateAdminTransition(currentStatus, nextStatus);
+    return;
   }
+
+  throw new ForbiddenError("You are not allowed to move the task status");
 }
 
-  function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
+function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
+  const canStartTask: boolean = currentStatus == TaskStatus.TODO && nextStatus == TaskStatus.IN_PROGRESS;
 
-  if (
-    nextStatus !== TaskStatus.IN_PROGRESS ||
-    (
-      currentStatus !== TaskStatus.TODO &&
-      currentStatus !== TaskStatus.CHANGES_REQUESTED
-    )
-  ) {
-    throw new BadRequestError(
-      `Task cannot be moved from ${currentStatus} to ${nextStatus}`
-    );
+  const canResumeReopenedTask: boolean = currentStatus == TaskStatus.CHANGES_REQUESTED && nextStatus == TaskStatus.IN_PROGRESS;
+
+  if(!canStartTask || !canResumeReopenedTask) {
+    throw new BadRequestError(`Developer can not move task from ${currentStatus} to ${nextStatus}`);
   }
+
+  return;
 }
 
 function validateAdminTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
+  const canCompleteTask: boolean = currentStatus == TaskStatus.IN_REVIEW && nextStatus == TaskStatus.COMPLETED;
 
-  if (
-    currentStatus !== TaskStatus.IN_REVIEW ||
-    (
-      nextStatus !== TaskStatus.COMPLETED &&
-      nextStatus !== TaskStatus.CHANGES_REQUESTED
-    )
-  ) {
-    throw new BadRequestError(
-      `Task cannot be moved from ${currentStatus} to ${nextStatus}`
-    );
+  const canRequestChangeTask: boolean = currentStatus == TaskStatus.IN_REVIEW && nextStatus == TaskStatus.CHANGES_REQUESTED;
+
+  if(!canCompleteTask || !canRequestChangeTask) {
+    throw new BadRequestError(`Admin can not move task from ${currentStatus} to ${nextStatus}`);
   }
+
+  return;
 }
