@@ -2,7 +2,7 @@ import { Prisma, Submission } from "../../generated/prisma/client.js";
 import { prisma } from "../configs/db.config.js";
 
 export interface ISubmissionRepository {
-    create(data: Prisma.SubmissionCreateInput): Promise<Submission>;
+    create(data: {taskId: bigint;submittedBy: bigint;assignmentId: bigint;submissionNumber: number;prUrl: string;notes: string | null;}): Promise<Submission>;
     findLatestSubmissionNumber(taskId: bigint): Promise<{ submissionNumber: number } | null>;
     findById(id: bigint): Promise<Submission | null>;
     findByTaskId(taskId: bigint): Promise<Submission[]>;
