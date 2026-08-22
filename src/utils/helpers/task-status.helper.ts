@@ -20,7 +20,7 @@ export function validateStatusTransition( currentStatus: TaskStatus,nextStatus: 
 function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
   const canStartTask: boolean = currentStatus == TaskStatus.TODO && nextStatus == TaskStatus.IN_PROGRESS;
 
-  const canResumeReopenedTask: boolean = currentStatus == TaskStatus.CHANGES_REQUESTED && nextStatus == TaskStatus.IN_PROGRESS;
+  const canResumeReopenedTask: boolean = currentStatus == TaskStatus.REOPENED && nextStatus == TaskStatus.IN_PROGRESS;
 
   if(!canStartTask || !canResumeReopenedTask) {
     throw new BadRequestError(`Developer can not move task from ${currentStatus} to ${nextStatus}`);
@@ -30,9 +30,9 @@ function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskS
 }
 
 function validateAdminTransition(currentStatus: TaskStatus,nextStatus: TaskStatus): void {
-  const canCompleteTask: boolean = currentStatus == TaskStatus.IN_REVIEW && nextStatus == TaskStatus.COMPLETED;
+  const canCompleteTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.COMPLETED;
 
-  const canRequestChangeTask: boolean = currentStatus == TaskStatus.IN_REVIEW && nextStatus == TaskStatus.CHANGES_REQUESTED;
+  const canRequestChangeTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.REOPENED;S
 
   if(!canCompleteTask || !canRequestChangeTask) {
     throw new BadRequestError(`Admin can not move task from ${currentStatus} to ${nextStatus}`);
