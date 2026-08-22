@@ -11,7 +11,9 @@ import { TaskAssignmentController } from "../../controllers/taskAssignment.contr
 import { TaskAssignmentService } from "../../services/taskAssignment.service.js";
 import { TaskAssignmentRepository } from "../../repositories/taskAssignment.repository.js";
 import { submissionRouter } from "./submission.route.js";
-
+import { UnassignmentReasonController } from "../../controllers/unassignmentReason.controller.js";
+import { UnassignmentReasonService } from "../../services/unassignmentReason.service.js";
+import { UnassignmentReasonRepository } from "../../repositories/unassignmentReason.repository.js";
 
 
 const taskController = new TaskController(new TaskService(new TaskRepository(), new TaskAssignmentRepository()));
