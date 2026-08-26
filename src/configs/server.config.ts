@@ -20,3 +20,5 @@ export const COOKIE_MAX_AGE = 24 * 60 * 60 * 1000; // 1 day, in milliseconds
 
 export const COOKIE_SECURE = NODE_ENV === "production";
 export const COOKIE_SAME_SITE = NODE_ENV === "production" ? "lax" : "strict";
+
+export const FRONTEND_URL = String(process.env.FRONTEND_URL);

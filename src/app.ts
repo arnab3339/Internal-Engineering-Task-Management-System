@@ -1,14 +1,22 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+
 import { errorHandler } from './middlewares/error.middleware.js';
 import { attchCorrelationMiddleware } from './middlewares/correlationId.middleware.js';
 import apiRouter from './routes/index.js';
+import { FRONTEND_URL } from './configs/server.config.js';
 
 const app = express();
 
 app.set('json replacer', (_key: string, value: unknown) => {
     return typeof value === 'bigint' ? value.toString() : value;
 });
+
+app.use(cors({
+    origin: [FRONTEND_URL],
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(express.text());
