@@ -22,7 +22,9 @@ function validateDeveloperTransition(currentStatus: TaskStatus,nextStatus: TaskS
 
   const canResumeReopenedTask: boolean = currentStatus == TaskStatus.REOPENED && nextStatus == TaskStatus.IN_PROGRESS;
 
-  if(!canStartTask || !canResumeReopenedTask) {
+  const isValidTransition = canStartTask || canResumeReopenedTask;
+
+  if(!isValidTransition) {
     throw new BadRequestError(`Developer can not move task from ${currentStatus} to ${nextStatus}`);
   }
 
@@ -33,8 +35,10 @@ function validateAdminTransition(currentStatus: TaskStatus,nextStatus: TaskStatu
   const canCompleteTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.COMPLETED;
 
   const canRequestChangeTask: boolean = currentStatus == TaskStatus.READY_FOR_REVIEW && nextStatus == TaskStatus.REOPENED;
+  
+  const isValidTransition = canCompleteTask || canRequestChangeTask;
 
-  if(!canCompleteTask || !canRequestChangeTask) {
+  if(!isValidTransition) {
     throw new BadRequestError(`Admin can not move task from ${currentStatus} to ${nextStatus}`);
   }
 
