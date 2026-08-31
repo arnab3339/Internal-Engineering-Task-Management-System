@@ -11,7 +11,8 @@ export interface ISubmissionRepository {
 
 export class SubmissionRepository implements ISubmissionRepository {
   async create(data: Prisma.SubmissionCreateInput,tx?:Prisma.TransactionClient): Promise<Submission> {
-    return prisma.submission.create({
+    const client = tx ?? prisma;
+    return client.submission.create({
       data: {
         task: {
           connect: {
