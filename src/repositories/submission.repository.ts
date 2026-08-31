@@ -34,18 +34,6 @@ export class SubmissionRepository implements ISubmissionRepository {
       },
     });
   }
-  async updateTaskStatus(taskId: bigint,newStatus: string,tx?: Prisma.TransactionClient): Promise<Task> {
-    const client = tx ?? prisma;
-
-    return client.task.update({
-      where: {
-        id: taskId,
-      },
-      data: {
-        status: newStatus as any,
-      },
-    });
-  }
 
   async findLatestSubmissionNumber(taskId: bigint): Promise<number | null>{
       const submission = await prisma.submission.findFirst({

@@ -41,12 +41,12 @@ export class SubmissionService implements ISubmissionService {
     );
 
     await this.taskRepository.updateTaskStatus(
-                taskId,
-                TaskStatus.READY_FOR_REVIEW,
-                tx
-            );
+        taskId,
+        TaskStatus.READY_FOR_REVIEW,
+        tx
+    );
 
-            return submission;
+    return submission;
     });
     }
     
