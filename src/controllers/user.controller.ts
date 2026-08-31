@@ -3,6 +3,7 @@ import { UserService } from "../services/user.service.js";
 import { sendSuccess } from "../utils/helpers/response.helper.js";
 import { AuthenticatedRequest } from "../types/express.js";
 import { SafeUser } from "../types/auth.type.js";
+import { RoleName } from "../types/role.type.js";
 
 export class UserController {
   private readonly userService: UserService;
@@ -23,7 +24,7 @@ export class UserController {
       const loggedInUserId = user.userId;
       const targetUserId = req.params.id as string;
 
-      const updatedUser: SafeUser = await this.userService.updateUser(loggedInUserId, BigInt(targetUserId), req.body);
+      const updatedUser: SafeUser = await this.userService.updateUser(loggedInUserId, BigInt(targetUserId),user.role as RoleName, req.body);
 
       sendSuccess(res, updatedUser, 200, 'User updated successfully');
     } catch (error) {

@@ -5,10 +5,12 @@ import { SafeUser } from "../types/auth.type.js";
 import { ConflictError, NotfoundError, UnauthorizedError } from "../utils/errors/app.error.js";
 import { hashPassword } from "../utils/helpers/password.helper.js";
 import { SafeUserWithRole } from "../types/auth.type.js";
+import { RoleName } from "../types/role.type.js";
+
 
 export interface IUserService {
   createUser(data: CreateUserDto): Promise<SafeUser>;
-  updateUser(loggedInUserId: bigint, targetUserId: bigint, data: UpdateUserDto): Promise<SafeUser>;
+  updateUser(loggedInUserId: bigint, targetUserId: bigint,role:RoleName ,data: UpdateUserDto): Promise<SafeUser>;
   getAllUsers(): Promise<SafeUser[]>;
   findUserById(id: bigint): Promise<SafeUserWithRole>;
 }
@@ -36,14 +38,14 @@ export class UserService implements IUserService {
     }
   }
 
- async updateUser(loggedInUserId: bigint, targetUserId: bigint, data: UpdateUserDto): Promise<SafeUser> {
+ async updateUser(loggedInUserId: bigint, targetUserId: bigint, role:RoleName, data: UpdateUserDto): Promise<SafeUser> {
     const targetUser = await this.userRepository.findById(targetUserId);
 
     if (!targetUser) {
       throw new NotfoundError("User not found");
     }
 
-    if (loggedInUserId !== targetUserId) {
+    if (role !== RoleName.ADMIN &&loggedInUserId !== targetUserId) {
       throw new UnauthorizedError("You are not allowed to update this profile");
     }
 
