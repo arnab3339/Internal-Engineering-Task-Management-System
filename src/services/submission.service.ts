@@ -19,25 +19,25 @@ export class SubmissionService implements ISubmissionService {
     }
     
     async createSubmission(taskId: bigint,submittedBy: bigint,data: CreateSubmissionDto): Promise<Submission> {
-        return prisma.$transaction(async (tx) => {
             const [task, latestSubmission] = await Promise.all([
-                this.taskRepository.findById(taskId,tx),
-                this.submissionRepository.findLatestSubmissionNumber(taskId,tx),
+                this.taskRepository.findById(taskId),
+                this.submissionRepository.findLatestSubmissionNumber(taskId),
             ]);
 
         if (!task) {
             throw new NotfoundError("Task not found");
         }
     const submissionNumber = (latestSubmission ?? 0) + 1;
-
-    const submission = await this.submissionRepository.create({
-      taskId,
-      submittedBy,
-      assignmentId: data.assignmentId,
-      submissionNumber,
-      prUrl: data.prUrl,
-      notes: data.notes ?? null,
-    },tx
+    return prisma.$transaction(async (tx) => {
+        const submission = await this.submissionRepository.create({
+            taskId,
+            submittedBy,
+            assignmentId: data.assignmentId,
+            submissionNumber,
+            prUrl: data.prUrl,
+            notes: data.notes ?? null,
+        },
+        tx
     );
 
     await this.taskRepository.updateTaskStatus(
