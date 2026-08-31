@@ -1,5 +1,5 @@
 import { prisma } from "../configs/db.config.js";
-import { Prisma, Task } from "../../generated/prisma/client.js";
+import { Prisma, Task, TaskStatus } from "../../generated/prisma/client.js";
 
 export interface ITaskRepository {
   findById(id: bigint): Promise<Task | null>;
@@ -7,7 +7,7 @@ export interface ITaskRepository {
   findAllForDeveloper(developerId: bigint, projectId: bigint): Promise<Task[]>;
   create(data: any): Promise<Task>;
   updateTask(taskId: bigint, data: Prisma.TaskUpdateInput): Promise<Task>;
-  updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task>;
+  updateTaskStatus(taskId: bigint, newStatus: TaskStatus,tx?:Prisma.TransactionClient): Promise<Task>;
 }
 
 export class TaskRepository implements ITaskRepository {
@@ -55,10 +55,12 @@ export class TaskRepository implements ITaskRepository {
       data
     });
   }
-  async updateTaskStatus(taskId: bigint, newStatus: string): Promise<Task> {
-    return prisma.task.update({
+  async updateTaskStatus(taskId: bigint, newStatus: TaskStatus,tx?: Prisma.TransactionClient): Promise<Task> {
+    const client = tx ?? prisma;
+
+    return client.task.update({
       where: { id: taskId },
-      data: { status: newStatus as any }
+      data: { status: newStatus }
     });
   }
 }

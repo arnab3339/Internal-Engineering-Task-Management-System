@@ -1,31 +1,57 @@
-import { Submission } from "../../generated/prisma/client.js";
+import { Submission,Prisma } from "../../generated/prisma/client.js";
 import { ISubmissionRepository } from "../repositories/submission.repository.js";
+import { CreateSubmissionDto } from "../dtos/submission.dto.js";
+import { NotfoundError} from "../utils/errors/app.error.js";
 import { ITaskRepository } from "../repositories/task.repository.js";
-import { UnauthorizedError , NotfoundError} from "../utils/errors/app.error.js";
-import { RoleName } from "../types/role.type.js";
-
+import { TaskStatus } from "../../generated/prisma/client.js";
+import { prisma } from "../configs/db.config.js";
 
 export interface ISubmissionService {
-    createSubmission(): Promise<void>; // populate parametrs and return type with using dto
-    findTaskSubmissions(taskId: bigint, userId: bigint, role: RoleName): Promise<Submission[]>;
+    createSubmission(taskId: bigint, submittedBy: bigint, data: CreateSubmissionDto): Promise<Submission>; 
+    findSubmissionById(id: bigint): Promise<Submission | null>;
 }
-
 export class SubmissionService implements ISubmissionService {
     private readonly submissionRepository: ISubmissionRepository;
     private readonly taskRepository: ITaskRepository;
-
-    constructor(
-        submissionRepository: ISubmissionRepository,
-        taskRepository: ITaskRepository,
-        
-    ) {
+    constructor(submissionRepository: ISubmissionRepository, taskRepository: ITaskRepository) {
         this.submissionRepository = submissionRepository;
         this.taskRepository = taskRepository;
-        
     }
     
-    async createSubmission(): Promise<void> {
-        // implement properly
+    async createSubmission(taskId: bigint,submittedBy: bigint,data: CreateSubmissionDto): Promise<Submission> {
+            const [task, latestSubmission] = await Promise.all([
+                this.taskRepository.findById(taskId),
+                this.submissionRepository.findLatestSubmissionNumber(taskId),
+            ]);
+
+        if (!task) {
+            throw new NotfoundError("Task not found");
+        }
+    const submissionNumber = (latestSubmission ?? 0) + 1;
+    return prisma.$transaction(async (tx) => {
+        const submission = await this.submissionRepository.create({
+            taskId,
+            submittedBy,
+            assignmentId: data.assignmentId,
+            submissionNumber,
+            prUrl: data.prUrl,
+            notes: data.notes ?? null,
+        },
+        tx
+    );
+
+    await this.taskRepository.updateTaskStatus(
+        taskId,
+        TaskStatus.READY_FOR_REVIEW,
+        tx
+    );
+
+    return submission;
+    });
+    }
+    
+    async findSubmissionById(id: bigint): Promise<Submission | null> {
+        return this.submissionRepository.findById(id);
     }
 
     async findTaskSubmissions(taskId: bigint): Promise<Submission[]> {
